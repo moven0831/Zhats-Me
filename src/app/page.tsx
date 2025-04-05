@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { v4 as uuidv4 } from 'uuid';
 import { useSearchParams } from 'next/navigation';
-import { EventContext } from './layout';
+import { EventContext } from '@/lib/context/EventContext';
+import { SelfApp } from '@selfxyz/qrcode';
 
 // Dynamically import the Self QR code component
 const SelfQRcodeWrapper = dynamic(
@@ -183,7 +184,17 @@ function VerificationResults({ selfVerified, zkEmailVerified, userData, onReset,
   );
 }
 
-export default function Home() {
+// Main page component wrapped in Suspense
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Home />
+    </Suspense>
+  );
+}
+
+// Actual Home component implementation
+function Home() {
   const { selectedEvent } = useContext(EventContext);
   const searchParams = useSearchParams();
   const isVerified = searchParams.get('verified') === 'true';
@@ -191,11 +202,11 @@ export default function Home() {
   const userIdFromParam = searchParams.get('userId');
 
   const [verificationStatus, setVerificationStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
-  const [isLoading, setIsLoading] = useState(true);
-  const [qrValue, setQrValue] = useState('');
+  const [_isLoading, _setIsLoading] = useState(true);
+  const [_qrValue, _setQrValue] = useState('');
   const [userId, setUserId] = useState<string | null>(null);
   const [debugInfo, setDebugInfo] = useState<string>('');
-  const [selfApp, setSelfApp] = useState<any>(null);
+  const [selfApp, setSelfApp] = useState<SelfApp | null>(null);
   const [timer, setTimer] = useState<number>(0);
   
   // Email verification states
@@ -228,9 +239,9 @@ export default function Home() {
       
       // For the QR code, generate a verification URL
       const fallbackValue = `${NGROK_URL}/api/verify?id=${userIdFromParam}`;
-      setQrValue(fallbackValue);
+      _setQrValue(fallbackValue);
       
-      setIsLoading(false);
+      _setIsLoading(false);
     } else {
       // Generate a user ID when the component mounts
       const newUserId = `0x${uuidv4().replace(/-/g, '')}`;
@@ -238,9 +249,9 @@ export default function Home() {
       
       // For the QR code, generate a verification URL
       const fallbackValue = `${NGROK_URL}/api/verify?id=${newUserId}`;
-      setQrValue(fallbackValue);
+      _setQrValue(fallbackValue);
       
-      setIsLoading(false);
+      _setIsLoading(false);
     }
   }, [NGROK_URL, isVerified, emailFromParam, userIdFromParam]);
 
@@ -420,9 +431,15 @@ export default function Home() {
     }
   };
 
-  // Handle ZK Email verification success
+  // Separate function for updating user data that doesn't need parameters
   const handleZkEmailSuccess = () => {
     setZkEmailVerified(true);
+    setEmailVerificationStatus('success');
+    // Just set some basic data since we don't have the actual verification data here
+    setUserData((prevData: Record<string, unknown> | null) => ({ 
+      ...prevData, 
+      verification: "ETHGlobal Taipei Ticket Verified" 
+    }));
   };
 
   const renderStatus = () => {
@@ -661,6 +678,14 @@ export default function Home() {
             />
           </div>
         )}
+      </div>
+      <div className="text-center">
+        <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">
+          By verifying, you confirm that you&apos;re eligible to attend this event.
+        </p>
+        <p className="text-xs text-slate-500 dark:text-slate-500">
+          <a href="/privacy" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">Privacy Policy</a> | <a href="/terms" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">Terms of Service</a>
+        </p>
       </div>
     </main>
   );

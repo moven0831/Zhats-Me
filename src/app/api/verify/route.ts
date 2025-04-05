@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyProof, getUserIdentifier } from '@/lib/verification';
-import { storeVerificationResult } from './status/route';
+import { storeVerificationResult } from '@/lib/store-verification';
 
 // Helper function to set CORS headers
 function setCorsHeaders(response: NextResponse) {
@@ -11,7 +11,7 @@ function setCorsHeaders(response: NextResponse) {
 }
 
 // Handle preflight requests
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS(_request: NextRequest) {
   const response = NextResponse.json({});
   return setCorsHeaders(response);
 }

@@ -10,20 +10,9 @@ function setCorsHeaders(response: NextResponse) {
 }
 
 // Handle preflight requests
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS(_request: NextRequest) {
   const response = NextResponse.json({});
   return setCorsHeaders(response);
-}
-
-// Store a verification result for a user ID
-export async function storeVerificationResult(userId: string, result: any) {
-  // Normalize userId format: Remove hyphens and ensure 0x prefix
-  const normalizedUserId = userId.startsWith('0x') 
-    ? userId.replace(/-/g, '') 
-    : `0x${userId.replace(/-/g, '')}`;
-  
-  console.log(`Storing verification result for user ${normalizedUserId}`);
-  await kv.set(normalizedUserId, result);
 }
 
 // Get verification status by user ID

@@ -1,10 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 
-export default function VerifyPage() {
+// Main verify page component wrapped in Suspense
+export default function VerifyPageWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <VerifyPage />
+    </Suspense>
+  );
+}
+
+// Actual verify page implementation
+function VerifyPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
@@ -82,7 +92,7 @@ export default function VerifyPage() {
               </div>
               <p className="text-center mb-6">{message}</p>
               <p className="text-center text-gray-600 text-sm mb-6">
-                You're one step closer to secure verification. In the next step, you'll use the Self app to verify your identity while keeping your credentials private.
+                You&apos;re one step closer to secure verification. In the next step, you&apos;ll use the Self app to verify your identity while keeping your credentials private.
               </p>
               <button
                 onClick={handleContinue}

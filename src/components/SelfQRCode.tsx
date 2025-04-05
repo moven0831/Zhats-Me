@@ -1,14 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { SelfApp } from '@selfxyz/qrcode';
+import type { ComponentType } from 'react';
 
 interface SelfQRCodeProps {
-  selfApp: any;
+  selfApp: SelfApp;
   onSuccess: () => void;
 }
 
 export default function SelfQRCode({ selfApp, onSuccess }: SelfQRCodeProps) {
-  const [QRComponent, setQRComponent] = useState<any>(null);
+  const [QRComponent, setQRComponent] = useState<ComponentType<{selfApp: SelfApp; onSuccess: () => void; size: number}> | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -26,9 +28,9 @@ export default function SelfQRCode({ selfApp, onSuccess }: SelfQRCodeProps) {
         }
         
         setQRComponent(() => SelfQRcodeWrapper);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Error loading Self QR code:', err);
-        setError(`Failed to load QR code: ${err.message}`);
+        setError(`Failed to load QR code: ${err instanceof Error ? err.message : 'Unknown error'}`);
       }
     };
 

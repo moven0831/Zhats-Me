@@ -10,12 +10,12 @@ function setCorsHeaders(response: NextResponse) {
 }
 
 // Handle preflight requests
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS(_request: NextRequest) {
   const response = NextResponse.json({});
   return setCorsHeaders(response);
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     // Verify email configuration
     const result = await verifyEmailConfig();

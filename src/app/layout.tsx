@@ -1,8 +1,9 @@
 'use client';
 
 import { Geist, Geist_Mono } from "next/font/google";
-import { createContext, useState } from "react";
+import { useState } from "react";
 import "./globals.css";
+import { EventContext, EventInfo } from "@/lib/context/EventContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,20 +13,6 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-});
-
-// Create context for sharing the selected event
-export interface EventInfo {
-  id: string;
-  name: string;
-}
-
-export const EventContext = createContext<{
-  selectedEvent: EventInfo;
-  setSelectedEvent: (event: EventInfo) => void;
-}>({
-  selectedEvent: { id: "taipei-2025", name: "ETHGlobal Taipei 2025" },
-  setSelectedEvent: () => {},
 });
 
 export default function RootLayout({

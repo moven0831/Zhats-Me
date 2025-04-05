@@ -12,22 +12,22 @@ const USER_ID_TYPE = "hex"; // must match the frontend
 const DEV_MODE = true; // for testing
 
 export interface VerificationRequest {
-  proof?: any;
-  publicSignals?: any;
+  proof?: Record<string, unknown>;
+  publicSignals?: string[] | Record<string, unknown>;
   id?: string;
 }
 
 export interface VerificationResponse {
   status: 'success' | 'error';
   result: boolean;
-  credentialSubject?: any;
+  credentialSubject?: Record<string, unknown>;
   verificationOptions?: {
     minimumAge?: number;
     ofac: boolean;
     excludedCountries?: string[];
   };
   message?: string;
-  details?: any;
+  details?: unknown;
 }
 
 export async function verifyProof(data: VerificationRequest): Promise<VerificationResponse> {
