@@ -59,22 +59,22 @@ export default function VerifyPage() {
   };
   
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm flex flex-col">
-        <h1 className="text-4xl font-bold mb-8">Identity Verification</h1>
+    <main className="flex min-h-screen flex-col items-center justify-between p-6 md:p-24">
+      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono flex flex-col">
+        <h1 className="page-title">ID verification with Self Protocol</h1>
         
-        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
+        <div className="card w-full max-w-md p-8 animate-fade-in">
           <h2 className="text-2xl font-semibold mb-4">Email Verification</h2>
           
           {verificationStatus === 'loading' && (
             <div className="flex flex-col items-center justify-center p-6">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+              <div className="spin h-10 w-10 border-t-2 border-b-2 border-blue-500 mb-4 rounded-full"></div>
               <p className="text-center">{message}</p>
             </div>
           )}
           
           {verificationStatus === 'success' && (
-            <div className="flex flex-col items-center justify-center p-6">
+            <div className="flex flex-col items-center justify-center p-6 animate-fade-in">
               <div className="bg-green-100 rounded-full p-3 mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -83,7 +83,7 @@ export default function VerifyPage() {
               <p className="text-center mb-6">{message}</p>
               <button
                 onClick={handleContinue}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
+                className="btn-primary"
               >
                 Continue to Verification
               </button>
@@ -91,7 +91,7 @@ export default function VerifyPage() {
           )}
           
           {verificationStatus === 'error' && (
-            <div className="flex flex-col items-center justify-center p-6">
+            <div className="flex flex-col items-center justify-center p-6 animate-fade-in">
               <div className="bg-red-100 rounded-full p-3 mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -100,7 +100,7 @@ export default function VerifyPage() {
               <p className="text-center mb-6">{message}</p>
               <button
                 onClick={() => router.push('/')}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
+                className="btn-primary"
               >
                 Back to Home
               </button>

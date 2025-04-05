@@ -11,8 +11,11 @@ const SelfQRcodeWrapper = dynamic(
   { 
     ssr: false,
     loading: () => (
-      <div className="animate-pulse bg-gray-200 w-[250px] h-[250px] flex items-center justify-center">
-        <p>Loading Self QR code...</p>
+      <div className="animate-pulse bg-gray-200 w-[300px] h-[300px] flex items-center justify-center rounded-xl">
+        <div className="text-center p-4">
+          <div className="spin h-8 w-8 border-t-2 border-b-2 border-gray-500 mx-auto mb-3 rounded-full"></div>
+          <p>Loading Self QR code...</p>
+        </div>
       </div>
     )
   }
@@ -289,16 +292,16 @@ export default function Home() {
         return (
           <div className="mt-4 flex flex-col items-center justify-center">
             <div className="flex items-center mb-2">
-              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-yellow-500 mr-2"></div>
+              <div className="spin h-5 w-5 border-t-2 border-b-2 border-yellow-500 mr-2 rounded-full"></div>
               <p className="text-yellow-500">Verifying your identity...</p>
             </div>
             <p className="text-xs text-gray-500">Time elapsed: {timer}s</p>
           </div>
         );
       case 'success':
-        return <p className="mt-4 text-green-500">Identity verified successfully!</p>;
+        return <p className="mt-4 text-green-500 font-medium text-center">Identity verified successfully!</p>;
       case 'error':
-        return <p className="mt-4 text-red-500">Error verifying identity. Please try again.</p>;
+        return <p className="mt-4 text-red-500 font-medium text-center">Error verifying identity. Please try again.</p>;
       default:
         return null;
     }
@@ -310,9 +313,9 @@ export default function Home() {
     if (!isVerified) return null;
     
     return (
-      <div className="w-full">
+      <div className="w-full animate-fade-in">
         <h2 className="text-2xl font-semibold mb-4">Verify Your Identity</h2>
-        <p className="mb-6 text-gray-600 dark:text-gray-300">
+        <p className="mb-6 text-light-text">
           {verificationStatus === 'success' 
             ? 'Your identity has been successfully verified!'
             : 'Scan the QR code below with the Self app to verify your identity.'}
@@ -320,11 +323,14 @@ export default function Home() {
         
         <div className="flex justify-center mb-6">
           {isLoading ? (
-            <div className="animate-pulse bg-gray-200 w-[250px] h-[250px] flex items-center justify-center">
-              <p>Loading QR code...</p>
+            <div className="animate-pulse bg-gray-200 w-[300px] h-[300px] flex items-center justify-center rounded-xl">
+              <div className="text-center p-4">
+                <div className="spin h-8 w-8 border-t-2 border-b-2 border-gray-500 mx-auto mb-3 rounded-full"></div>
+                <p>Loading QR code...</p>
+              </div>
             </div>
           ) : verificationStatus === 'success' ? (
-            <div className="bg-green-100 w-[250px] h-[250px] flex items-center justify-center rounded-lg">
+            <div className="bg-green-100 w-[300px] h-[300px] flex items-center justify-center rounded-xl shadow-md">
               <div className="text-center p-6">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -333,15 +339,21 @@ export default function Home() {
               </div>
             </div>
           ) : selfApp ? (
-            <SelfQRcodeWrapper
-              selfApp={selfApp}
-              type="websocket"
-              onSuccess={handleSelfVerification}
-              size={250}
-            />
+            <div className="rounded-xl shadow-md overflow-hidden border border-gray-200 p-6 bg-white flex flex-col items-center">
+              <p className="mb-4 text-sm text-gray-600">Scan with your Self app</p>
+              <SelfQRcodeWrapper
+                selfApp={selfApp}
+                type="websocket"
+                onSuccess={handleSelfVerification}
+                size={250}
+              />
+            </div>
           ) : (
-            <div className="animate-pulse bg-gray-200 w-[250px] h-[250px] flex items-center justify-center">
-              <p>Initializing Self app...</p>
+            <div className="animate-pulse bg-gray-200 w-[300px] h-[300px] flex items-center justify-center rounded-xl">
+              <div className="text-center p-4">
+                <div className="spin h-8 w-8 border-t-2 border-b-2 border-gray-500 mx-auto mb-3 rounded-full"></div>
+                <p>Initializing Self app...</p>
+              </div>
             </div>
           )}
         </div>
@@ -360,7 +372,7 @@ export default function Home() {
           <div className="mt-6 flex justify-center">
             <button
               onClick={resetVerification}
-              className="px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700"
+              className="btn-primary"
             >
               Start New Verification
             </button>
@@ -371,14 +383,17 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm flex flex-col">
-        <h1 className="text-4xl font-bold mb-8">Identity Verification</h1>
+    <main className="flex min-h-screen flex-col items-center justify-between p-6 md:p-24">
+      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono flex flex-col">
+        <h1 className="page-title">Zhat's Me</h1>
         
-        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
+        <div className="card w-full max-w-md p-8 animate-fade-in">
           {/* If user is verified through email link, show verified banner */}
           {isVerified && (
-            <div className="mb-6 bg-green-100 p-4 rounded-md">
+            <div className="mb-6 bg-green-100 p-4 rounded-lg flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
               <p className="text-green-800">
                 <span className="font-semibold">Email verified:</span> {email}
               </p>
@@ -390,8 +405,8 @@ export default function Home() {
             <>
               {/* Email success state - Show after sending email */}
               {emailVerificationStatus === 'success' ? (
-                <div className="mb-8 w-full">
-                  <div className="bg-blue-100 p-6 rounded-lg text-center">
+                <div className="mb-8 w-full animate-fade-in">
+                  <div className="bg-blue-50 p-6 rounded-lg text-center">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-blue-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
                     </svg>
@@ -407,22 +422,22 @@ export default function Home() {
                         setEmailVerificationStatus('idle');
                         setEmailMessage('');
                       }}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                      className="btn-primary"
                     >
                       Use a different email
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="mb-8 w-full">
+                <div className="mb-8 w-full animate-fade-in">
                   <h2 className="text-2xl font-semibold mb-4">Enter Your Email</h2>
-                  <p className="mb-4 text-gray-600 dark:text-gray-300">
+                  <p className="mb-4 text-light-text">
                     Please enter your email address to receive a verification link.
                   </p>
                   
                   <form onSubmit={handleEmailSubmit} className="w-full">
                     <div className="mb-4">
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label htmlFor="email" className="block text-sm font-medium mb-1">
                         Email Address
                       </label>
                       <input
@@ -430,7 +445,7 @@ export default function Home() {
                         id="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="input-field"
                         placeholder="your@email.com"
                         required
                       />
@@ -448,14 +463,11 @@ export default function Home() {
                     <button
                       type="submit"
                       disabled={emailVerificationStatus === 'pending'}
-                      className={`w-full px-4 py-2 text-white font-medium rounded-md 
-                        ${emailVerificationStatus === 'pending' 
-                          ? 'bg-gray-400 cursor-not-allowed' 
-                          : 'bg-blue-600 hover:bg-blue-700'}`}
+                      className="btn-primary w-full py-3"
                     >
                       {emailVerificationStatus === 'pending' ? (
                         <span className="flex items-center justify-center">
-                          <span className="animate-spin h-4 w-4 border-t-2 border-b-2 border-white rounded-full mr-2"></span>
+                          <span className="spin h-4 w-4 border-t-2 border-b-2 border-white rounded-full mr-2"></span>
                           Sending...
                         </span>
                       ) : 'Send Verification Email'}
