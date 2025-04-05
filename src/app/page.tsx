@@ -257,7 +257,7 @@ export default function Home() {
           
           // Initialize Self protocol app with configuration for off-chain verification
           const app = new SelfAppBuilder({
-            appName: "Self Verifier",
+            appName: "Zhat's Me Verifier",
             scope: appScope, 
             endpoint: `${NGROK_URL}/api/verify`,
             userId,
@@ -448,10 +448,10 @@ export default function Home() {
   const renderQrCodeSection = () => {
     return (
       <div className="w-full animate-fade-in">
-        <h2 className="text-xl font-semibold mb-6">Step 1: Verify Your Identity with Self</h2>
+        <h2 className="text-xl font-semibold mb-6">Step 1: Verify Your Identity with Self Protocol</h2>
         
-        <div className="flex flex-col lg:flex-row justify-between items-center gap-8">
-          <div className="lg:flex-1">
+        <div className="flex flex-col justify-between items-center gap-8">
+          <div className="w-full">
             <div className="mb-6">
               <div className="flex items-center mb-3">
                 <div className="bg-blue-100 rounded-full p-1.5 mr-2">
@@ -467,31 +467,9 @@ export default function Home() {
                 <li>Wait for confirmation to proceed</li>
               </ol>
             </div>
-            
-            <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-              <div className="flex items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                <div>
-                  <p className="text-sm text-yellow-800 font-medium">Don't have the Self app yet?</p>
-                  <p className="text-xs text-yellow-700 mt-1">
-                    <a 
-                      href="https://selfid.net/download" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="underline hover:text-yellow-600"
-                    >
-                      Download Self app
-                    </a> 
-                    and complete the verification process to continue.
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
-          
-          <div className="lg:flex-1 flex justify-center items-center">
+
+          <div className="flex justify-center items-center">
             {verificationStatus === 'pending' ? (
               <div className="animate-pulse bg-blue-50 w-[300px] h-[300px] flex items-center justify-center rounded-xl">
                 <div className="text-center p-4">
@@ -509,15 +487,15 @@ export default function Home() {
                 </div>
               </div>
             ) : selfApp ? (
-              <div className="rounded-xl shadow-md overflow-hidden border border-gray-200 p-6 bg-white flex flex-col items-center">
-                <p className="mb-4 text-sm text-gray-600">Open your Self app and scan this QR code</p>
+              <div className="rounded-xl shadow-md overflow-hidden border border-gray-200 p-4 bg-white flex flex-col items-center">
+                <p className="mb-3 text-sm text-gray-600">Open your Self app and scan this QR code</p>
                 <SelfQRcodeWrapper
                   selfApp={selfApp}
                   type="websocket"
                   onSuccess={handleSelfVerification}
-                  size={250}
+                  size={200}
                 />
-                <p className="mt-4 text-xs text-gray-500">Your data remains private and controlled by you</p>
+                <p className="mt-3 text-xs text-gray-500">Your data remains private and controlled by you</p>
               </div>
             ) : (
               <div className="animate-pulse bg-gray-200 w-[300px] h-[300px] flex items-center justify-center rounded-xl">
