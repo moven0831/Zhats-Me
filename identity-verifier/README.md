@@ -9,12 +9,14 @@ A simple web application that uses the Self protocol to verify a user's identity
 - Real-time verification status updates
 - Privacy-preserving identity verification
 - Fallback QR code option when Self SDK has issues
+- Email verification flow with secure token-based authentication
 
 ## Prerequisites
 
 - Node.js 18+ and pnpm installed
 - Self protocol mobile app installed on your phone (for testing)
 - ngrok for creating a secure tunnel to your localhost
+- Gmail account (or other email provider) for sending verification emails
 
 ## Setup Instructions
 
@@ -23,23 +25,65 @@ A simple web application that uses the Self protocol to verify a user's identity
    ```
    pnpm install
    ```
-3. Start the development server:
+3. Configure email verification (see Email Configuration section below)
+4. Start the development server:
    ```
    pnpm dev
    ```
-4. In a separate terminal, set up ngrok to expose your localhost:
+5. In a separate terminal, set up ngrok to expose your localhost:
    ```
    ngrok http 3001
    ```
    This will give you a public URL like `https://xxxx-xxx-xxx-xx.ngrok-free.app`
 
-5. Update the `endpoint` URL in `src/app/page.tsx` with your ngrok URL:
+6. Update the `endpoint` URL in `src/app/page.tsx` with your ngrok URL:
    ```typescript
    // Replace with your actual ngrok URL
    endpoint: "https://xxxx-xxx-xxx-xx.ngrok-free.app/api/verify",
    ```
 
-6. Access the application at http://localhost:3001
+7. Update the `NEXT_PUBLIC_APP_URL` in `.env.local` with your ngrok URL:
+   ```
+   NEXT_PUBLIC_APP_URL=https://xxxx-xxx-xxx-xx.ngrok-free.app
+   ```
+
+8. Access the application at http://localhost:3001
+
+## Email Configuration
+
+### Setting up Gmail for Email Verification
+
+1. **Enable 2-Step Verification on your Google account:**
+   - Go to [Google Account Security](https://myaccount.google.com/security)
+   - Enable 2-Step Verification if not already enabled
+
+2. **Create an App Password:**
+   - Go to [App Passwords](https://myaccount.google.com/apppasswords)
+   - Select "Mail" as the app and give it a name like "Identity Verifier"
+   - Google will generate a 16-character password - this is your `EMAIL_PASSWORD`
+
+3. **Update your .env.local file:**
+   ```
+   EMAIL_HOST=smtp.gmail.com
+   EMAIL_PORT=587
+   EMAIL_SECURE=false
+   EMAIL_USER=your-actual-gmail@gmail.com
+   EMAIL_PASSWORD=your-16-character-app-password
+   EMAIL_FROM="Identity Verifier <your-actual-gmail@gmail.com>"
+   ```
+
+### Using Other Email Providers
+
+If you're using a different email provider, update the .env.local with the appropriate SMTP settings:
+
+```
+EMAIL_HOST=smtp.your-provider.com
+EMAIL_PORT=587
+EMAIL_SECURE=false
+EMAIL_USER=your-email@provider.com
+EMAIL_PASSWORD=your-email-password
+EMAIL_FROM="Identity Verifier <your-email@provider.com>"
+```
 
 ## ngrok Configuration
 
@@ -59,10 +103,12 @@ Make sure to use the HTTPS URL provided by ngrok in your application configurati
 
 ## How It Works
 
-1. The app generates a QR code using the Self protocol SDK
-2. The user scans the QR code with the Self app
-3. The Self app allows the user to prove their identity while preserving privacy
-4. Upon successful verification, the app acknowledges the verified identity
+1. The user enters their email address and receives a verification link
+2. After clicking the link, they're redirected back to the app with verified status
+3. The app generates a QR code using the Self protocol SDK
+4. The user scans the QR code with the Self app
+5. The Self app allows the user to prove their identity while preserving privacy
+6. Upon successful verification, the app acknowledges the verified identity
 
 ## Self Protocol Integration Details
 
