@@ -1,36 +1,9 @@
 import { SelfBackendVerifier, getUserIdentifier as getSelfUserIdentifier, countryCodes } from '@selfxyz/core';
 import { SelfApp } from '@selfxyz/qrcode';
+import { kv } from '@vercel/kv';
 
 // Re-export the getUserIdentifier function
 export { getSelfUserIdentifier as getUserIdentifier };
-
-// Create a global storage object that persists across API calls
-// This ensures data persists between different API route executions
-declare global {
-  var verificationStore: Map<string, any> | undefined;
-}
-
-// Initialize the global store if it doesn't exist
-if (!global.verificationStore) {
-  global.verificationStore = new Map<string, any>();
-  console.log('Initialized global verification store');
-}
-
-// Simple in-memory key-value store using the global namespace for persistence
-export const localKV = {
-  async get(key: string): Promise<any> {
-    console.log(`Getting value for key ${key} from global store`);
-    return global.verificationStore?.get(key) || null;
-  },
-  
-  async set(key: string, value: any): Promise<void> {
-    console.log(`Storing value for key ${key} in global store:`, value);
-    global.verificationStore?.set(key, value);
-  }
-};
-
-// Use the local KV implementation
-const kv = localKV;
 
 // Configuration parameters
 const SCOPE = "self-verification-scope"; // must match the frontend

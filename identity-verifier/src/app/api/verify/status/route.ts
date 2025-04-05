@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { localKV } from '@/lib/verification';
+import { kv } from '@vercel/kv';
 
 // Helper function to set CORS headers
 function setCorsHeaders(response: NextResponse) {
@@ -18,7 +18,7 @@ export async function OPTIONS(request: NextRequest) {
 // Store a verification result for a user ID
 export async function storeVerificationResult(userId: string, result: any) {
   console.log(`Storing verification result for user ${userId}:`, result);
-  await localKV.set(userId, result);
+  await kv.set(userId, result);
 }
 
 // Get verification status by user ID
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     console.log('Checking verification status for user:', userId);
     
     // Get the stored verification result for this user from our shared KV store
-    const result = await localKV.get(userId);
+    const result = await kv.get(userId);
     
     if (result) {
       console.log('Found verification result:', result);
