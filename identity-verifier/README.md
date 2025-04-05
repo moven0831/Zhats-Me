@@ -14,6 +14,7 @@ A simple web application that uses the Self protocol to verify a user's identity
 
 - Node.js 18+ and pnpm installed
 - Self protocol mobile app installed on your phone (for testing)
+- ngrok for creating a secure tunnel to your localhost
 
 ## Setup Instructions
 
@@ -26,11 +27,35 @@ A simple web application that uses the Self protocol to verify a user's identity
    ```
    pnpm dev
    ```
-4. For local testing, you'll need to expose your localhost to the internet using ngrok:
+4. In a separate terminal, set up ngrok to expose your localhost:
    ```
-   ngrok http 3000
+   ngrok http 3001
    ```
-5. Update the `endpoint` URL in `src/app/page.tsx` with your ngrok URL.
+   This will give you a public URL like `https://xxxx-xxx-xxx-xx.ngrok-free.app`
+
+5. Update the `endpoint` URL in `src/app/page.tsx` with your ngrok URL:
+   ```typescript
+   // Replace with your actual ngrok URL
+   endpoint: "https://xxxx-xxx-xxx-xx.ngrok-free.app/api/verify",
+   ```
+
+6. Access the application at http://localhost:3001
+
+## ngrok Configuration
+
+The Self protocol requires that your verification endpoint is accessible from the internet, which is why we use ngrok. When ngrok is running, it will provide a web interface at http://127.0.0.1:4040 where you can:
+
+- Monitor requests
+- Inspect request/response details
+- Replay requests for debugging
+
+Example ngrok output:
+```
+Web Interface                 http://127.0.0.1:4040
+Forwarding                    https://bf9c-111-235-226-130.ngrok-free.app -> http://localhost:3001
+```
+
+Make sure to use the HTTPS URL provided by ngrok in your application configuration.
 
 ## How It Works
 

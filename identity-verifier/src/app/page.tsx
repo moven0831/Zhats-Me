@@ -2,47 +2,57 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import FallbackQRCode from '@/components/FallbackQRCode';
 import { v4 as uuidv4 } from 'uuid';
 
-// Dynamically import the Self components with SSR disabled
+// Dynamically import the Self QR code component
 const SelfQRcodeWrapper = dynamic(
   () => import('@selfxyz/qrcode').then(mod => mod.default),
-  { ssr: false }
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="animate-pulse bg-gray-200 w-[250px] h-[250px] flex items-center justify-center">
+        <p>Loading Self QR code...</p>
+      </div>
+    )
+  }
 );
 
 export default function Home() {
   const [verificationStatus, setVerificationStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
-  const [selfApp, setSelfApp] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [useFallback, setUseFallback] = useState(false);
   const [qrValue, setQrValue] = useState('');
   const [userId, setUserId] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<string>('');
+  const [selfApp, setSelfApp] = useState<any>(null);
+
+  // URL for the ngrok tunnel
+  const NGROK_URL = "https://bf9c-111-235-226-130.ngrok-free.app";
 
   useEffect(() => {
     // Generate a user ID when the component mounts
-    setUserId(uuidv4());
-  }, []);
+    const newUserId = uuidv4();
+    setUserId(newUserId);
+    
+    // For the QR code, generate a verification URL
+    const fallbackValue = `${NGROK_URL}/api/verify?id=${newUserId}`;
+    setQrValue(fallbackValue);
+    
+    setIsLoading(false);
+  }, [NGROK_URL]);
 
   useEffect(() => {
-    // Only run on client-side if we have a userId
-    if (typeof window !== 'undefined' && userId) {
-      setIsLoading(true);
-      
-      // For the fallback QR code, generate a simple verification URL
-      const fallbackValue = `${window.location.origin}/api/verify?id=${userId}`;
-      setQrValue(fallbackValue);
-      
-      // Try to dynamically import SelfAppBuilder
-      import('@selfxyz/qrcode').then((mod) => {
-        const { SelfAppBuilder } = mod;
-        
+    // Initialize Self app
+    if (userId) {
+      const initSelfApp = async () => {
         try {
+          // Dynamically import SelfAppBuilder
+          const { SelfAppBuilder } = await import('@selfxyz/qrcode');
+          
           // Initialize Self protocol app
           const app = new SelfAppBuilder({
             appName: "Identity Verifier",
             scope: "identity-verification-scope",
-            endpoint: `${window.location.origin}/api/verify`,
+            endpoint: `${NGROK_URL}/api/verify`,
             userId,
             disclosures: { 
               // Request passport information
@@ -62,48 +72,20 @@ export default function Home() {
           setSelfApp(app);
         } catch (error) {
           console.error("Error building Self app:", error);
-          setUseFallback(true);
-        } finally {
-          setIsLoading(false);
         }
-      }).catch(err => {
-        console.error("Failed to load Self SDK:", err);
-        setIsLoading(false);
-        setUseFallback(true);
-      });
-    }
-  }, [userId]);
-
-  const handleVerificationSuccess = () => {
-    try {
-      setVerificationStatus('pending');
+      };
       
-      // In a real application, the verification happens on the server
-      // This is a simplified client-side feedback for demo purposes
-      console.log("Verification successful!");
+      initSelfApp();
+    }
+  }, [userId, NGROK_URL]);
+
+  const handleSelfVerification = () => {
+    setVerificationStatus('pending');
+    
+    // Simulate successful verification
+    setTimeout(() => {
       setVerificationStatus('success');
-    } catch (error) {
-      console.error('Error verifying identity:', error);
-      setVerificationStatus('error');
-    }
-  };
-
-  const handleFallbackScan = async () => {
-    try {
-      setVerificationStatus('pending');
-      
-      // Simulate verification process
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setVerificationStatus('success');
-    } catch (error) {
-      console.error('Error in fallback verification:', error);
-      setVerificationStatus('error');
-    }
-  };
-
-  const toggleQRMode = () => {
-    setUseFallback(!useFallback);
+    }, 1500);
   };
 
   const renderStatus = () => {
@@ -127,7 +109,7 @@ export default function Home() {
         <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
           <h2 className="text-2xl font-semibold mb-4">Verify Your Identity</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-300">
-            Scan the QR code below with the Self app to verify your identity.
+            Scan the QR code below with any QR code scanner to verify your identity.
           </p>
           
           <div className="flex justify-center mb-6">
@@ -135,34 +117,20 @@ export default function Home() {
               <div className="animate-pulse bg-gray-200 w-[250px] h-[250px] flex items-center justify-center">
                 <p>Loading QR code...</p>
               </div>
-            ) : useFallback ? (
-              <FallbackQRCode 
-                value={qrValue} 
-                size={250} 
-                onScan={handleFallbackScan} 
-              />
             ) : selfApp ? (
               <SelfQRcodeWrapper
                 selfApp={selfApp}
-                onSuccess={handleVerificationSuccess}
+                onSuccess={handleSelfVerification}
                 size={250}
               />
             ) : (
-              <div className="bg-red-100 p-4 rounded-lg">
-                <p className="text-red-500">Failed to initialize Self app.</p>
-                <p className="text-sm mt-2">Check console for details.</p>
+              <div className="animate-pulse bg-gray-200 w-[250px] h-[250px] flex items-center justify-center">
+                <p>Initializing Self app...</p>
               </div>
             )}
           </div>
           
           {renderStatus()}
-          
-          <button 
-            onClick={toggleQRMode}
-            className="mt-4 text-blue-500 text-sm underline"
-          >
-            {useFallback ? "Try Self SDK QR Code" : "Use fallback QR code"}
-          </button>
           
           {userId && (
             <p className="mt-4 text-sm text-gray-500">
@@ -172,6 +140,7 @@ export default function Home() {
           
           <div className="mt-6 text-sm text-gray-500 dark:text-gray-400">
             <p>Privacy-first identity verification powered by Self Protocol.</p>
+            <p className="mt-1 text-xs">Using ngrok URL: {NGROK_URL}</p>
           </div>
         </div>
       </div>
