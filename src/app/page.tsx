@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import dynamic from 'next/dynamic';
 import { v4 as uuidv4 } from 'uuid';
 import { useSearchParams } from 'next/navigation';
+import { EventContext } from './layout';
 
 // Dynamically import the Self QR code component
 const SelfQRcodeWrapper = dynamic(
@@ -37,7 +38,153 @@ const ZkEmailVerifier = dynamic(
   }
 );
 
+// Combined verification results component
+interface VerificationResultsProps {
+  selfVerified: boolean;
+  zkEmailVerified: boolean;
+  userData?: {
+    name?: string;
+    dateOfBirth?: string;
+    [key: string]: any;
+  };
+  onReset: () => void;
+  eventName: string;
+}
+
+function VerificationResults({ selfVerified, zkEmailVerified, userData, onReset, eventName }: VerificationResultsProps) {
+  const allVerified = selfVerified && zkEmailVerified;
+  
+  if (!selfVerified && !zkEmailVerified) {
+    return null; // Don't show anything if neither verification is complete
+  }
+  
+  return (
+    <div className="mt-6 w-full animate-fade-in">
+      <div className={`rounded-md p-4 border ${
+        allVerified 
+          ? 'bg-green-50/20 dark:bg-green-900/20 border-green-200/20 dark:border-green-800/20' 
+          : 'bg-blue-50/20 dark:bg-blue-900/20 border-blue-200/20 dark:border-blue-800/20'
+      } backdrop-blur-md`}>
+        <div className="flex items-start">
+          <div className={`p-2 rounded-full mr-3 ${
+            allVerified 
+              ? 'bg-green-100/50 dark:bg-green-900/30' 
+              : 'bg-blue-100/50 dark:bg-blue-900/30'
+          }`}>
+            {allVerified ? (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-green-600 dark:text-green-400">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-blue-600 dark:text-blue-400">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            )}
+          </div>
+          
+          <div className="flex-1">
+            <h3 className={`text-lg font-bold ${
+              allVerified 
+                ? 'text-green-800 dark:text-green-300' 
+                : 'text-blue-800 dark:text-blue-300'
+            }`}>
+              {allVerified 
+                ? 'Verification Complete!' 
+                : 'Verification In Progress'}
+            </h3>
+            
+            <div className="mt-3 space-y-2">
+              <div className="flex items-center">
+                <div className={`w-4 h-4 rounded-full flex items-center justify-center mr-2 ${
+                  selfVerified 
+                    ? 'bg-green-500 dark:bg-green-600' 
+                    : 'bg-gray-300 dark:bg-gray-700'
+                }`}>
+                  {selfVerified && (
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-2.5 h-2.5 text-white">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  )}
+                </div>
+                <span className={`text-sm ${selfVerified 
+                  ? 'text-green-700 dark:text-green-400' 
+                  : 'text-gray-500 dark:text-gray-400'
+                }`}>
+                  Identity verification {selfVerified ? 'complete' : 'pending'}
+                </span>
+              </div>
+              
+              <div className="flex items-center">
+                <div className={`w-4 h-4 rounded-full flex items-center justify-center mr-2 ${
+                  zkEmailVerified 
+                    ? 'bg-green-500 dark:bg-green-600' 
+                    : 'bg-gray-300 dark:bg-gray-700'
+                }`}>
+                  {zkEmailVerified && (
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-2.5 h-2.5 text-white">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  )}
+                </div>
+                <span className={`text-sm ${zkEmailVerified 
+                  ? 'text-green-700 dark:text-green-400' 
+                  : 'text-gray-500 dark:text-gray-400'
+                }`}>
+                  Ticket verification {zkEmailVerified ? 'complete' : 'pending'}
+                </span>
+              </div>
+            </div>
+            
+            {allVerified && (
+              <div className="mt-4 p-3 bg-white/40 dark:bg-slate-800/40 rounded-md border border-green-200/20 dark:border-green-800/20">
+                <h4 className="font-medium text-green-800 dark:text-green-300 text-sm mb-1">You're all set for {eventName}!</h4>
+                <p className="text-xs text-green-700 dark:text-green-400">
+                  Your identity and ticket have been verified. We look forward to seeing you at the event!
+                </p>
+                
+                {userData && Object.keys(userData).length > 0 && (
+                  <div className="mt-2 pt-2 border-t border-green-200/20 dark:border-green-800/20">
+                    <p className="text-xs text-green-600 dark:text-green-500 mb-1">Verified information:</p>
+                    <div className="space-y-1">
+                      {userData.name && (
+                        <p className="text-xs text-green-700 dark:text-green-400">Name: <span className="font-medium">{userData.name}</span></p>
+                      )}
+                      {userData.dateOfBirth && (
+                        <p className="text-xs text-green-700 dark:text-green-400">Date of Birth: <span className="font-medium">{userData.dateOfBirth}</span></p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {selfVerified && !zkEmailVerified && (
+              <div className="mt-3">
+                <p className="text-blue-700 dark:text-blue-400 text-xs">
+                  Please complete the ticket verification step below.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {allVerified && (
+          <div className="mt-4 flex justify-end">
+            <button
+              onClick={onReset}
+              className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-md text-xs font-medium transition-colors"
+            >
+              Start New Verification
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
+  const { selectedEvent } = useContext(EventContext);
   const searchParams = useSearchParams();
   const isVerified = searchParams.get('verified') === 'true';
   const emailFromParam = searchParams.get('email');
@@ -55,9 +202,23 @@ export default function Home() {
   const [email, setEmail] = useState<string>('');
   const [emailVerificationStatus, setEmailVerificationStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
   const [emailMessage, setEmailMessage] = useState<string>('');
+  
+  // Combined verification states
+  const [selfVerified, setSelfVerified] = useState(false);
+  const [zkEmailVerified, setZkEmailVerified] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
 
   // URL for the ngrok tunnel - ensure no trailing slash
   const NGROK_URL = "https://7694-111-235-226-130.ngrok-free.app";
+
+  // Reset all verification states
+  const resetVerification = () => {
+    setVerificationStatus('idle');
+    setSelfVerified(false);
+    setZkEmailVerified(false);
+    setUserData(null);
+    setDebugInfo('');
+  };
 
   useEffect(() => {
     // Check if we're returning from email verification
@@ -96,7 +257,7 @@ export default function Home() {
           
           // Initialize Self protocol app with configuration for off-chain verification
           const app = new SelfAppBuilder({
-            appName: "Self Verifier",
+            appName: "Zhat's Me Verifier",
             scope: appScope, 
             endpoint: `${NGROK_URL}/api/verify`,
             userId,
@@ -209,6 +370,7 @@ export default function Home() {
             if (result && result.success) {
               clearInterval(timerInterval); // Stop the timer
               setVerificationStatus('success');
+              setSelfVerified(true);
               
               if (result.credentialSubject) {
                 const info = Object.entries(result.credentialSubject)
@@ -217,6 +379,7 @@ export default function Home() {
                   .join(', ');
                 
                 setDebugInfo(info);
+                setUserData(result.credentialSubject);
               }
               return true;
             } else if (i === retries - 1) {
@@ -248,168 +411,108 @@ export default function Home() {
         return false;
       };
       
-      // Wait a short time for the API to process before starting polling
-      await new Promise(resolve => setTimeout(resolve, 500));
       checkStatus();
-      
     } catch (error) {
-      clearInterval(timerInterval); // Stop the timer
-      console.error('Error handling verification:', error);
+      clearInterval(timerInterval); // Stop timer on error
+      console.error('Error during verification:', error);
       setVerificationStatus('error');
       setDebugInfo(error instanceof Error ? error.message : 'Unknown error');
     }
   };
 
-  // Handle errors from the Self QR code component
-  const handleSelfError = (error: any) => {
-    console.error('Self verification error:', error);
-    setVerificationStatus('error');
-    
-    let errorMessage = 'Unknown error during verification';
-    
-    if (typeof error === 'string') {
-      errorMessage = error;
-    } else if (error && error.message) {
-      errorMessage = error.message;
-    } else if (error && error.status) {
-      errorMessage = `Status: ${error.status}`;
-      if (error.reason) {
-        errorMessage += ` - Reason: ${error.reason}`;
-      }
-    }
-    
-    setDebugInfo(errorMessage);
-  };
-
-  // Add resetVerification function
-  const resetVerification = () => {
-    // Generate new userId
-    const newUserId = `0x${uuidv4().replace(/-/g, '')}`;
-    setUserId(newUserId);
-    
-    // Reset verification status and debug info
-    setVerificationStatus('idle');
-    setDebugInfo('');
-    
-    // Update QR value
-    const fallbackValue = `${NGROK_URL}/api/verify?id=${newUserId}`;
-    setQrValue(fallbackValue);
-    
-    // Reset email verification if needed
-    if (!isVerified) {
-      setEmailVerificationStatus('idle');
-      setEmail('');
-    }
+  // Handle ZK Email verification success
+  const handleZkEmailSuccess = () => {
+    setZkEmailVerified(true);
   };
 
   const renderStatus = () => {
-    switch (verificationStatus) {
-      case 'pending':
-        return (
-          <div className="mt-4 flex flex-col items-center justify-center">
-            <div className="flex items-center mb-2">
-              <div className="spin h-5 w-5 border-t-2 border-b-2 border-yellow-500 mr-2 rounded-full"></div>
-              <p className="text-yellow-500">Securely verifying your credentials...</p>
-            </div>
-            <p className="text-xs text-gray-500">Time elapsed: {timer}s</p>
-          </div>
-        );
-      case 'success':
-        return <p className="mt-4 text-green-500 font-medium text-center">Identity verified successfully! Your credentials have been securely validated.</p>;
-      case 'error':
-        return <p className="mt-4 text-red-500 font-medium text-center">Verification could not be completed. Please ensure you have the required credentials in your Self app and try again.</p>;
-      default:
-        return null;
+    if (verificationStatus === 'idle') return null;
+    
+    if (verificationStatus === 'pending') {
+      return (
+        <div className="mt-4 p-4 bg-blue-50 rounded-md animate-pulse">
+          <p className="flex items-center text-blue-700">
+            <span className="spin h-4 w-4 border-t-2 border-b-2 border-blue-500 rounded-full mr-2"></span>
+            <span>Waiting for verification ({timer}s)...</span>
+          </p>
+          <p className="text-blue-600 text-sm mt-1">
+            Please follow the instructions in your Self app
+          </p>
+        </div>
+      );
     }
+    
+    return null;
   };
 
   const renderQrCodeSection = () => {
-    // Only show QR code section if user has verified their email through the link
-    // This checks if they've been redirected back from the verification page
-    if (!isVerified) return null;
-    
     return (
       <div className="w-full animate-fade-in">
-        <h2 className="text-2xl font-semibold mb-4">Secure Identity Verification</h2>
-        <p className="mb-4 text-light-text">
-          {verificationStatus === 'success' 
-            ? 'Congratulations! Your identity has been securely verified through Self Protocol.'
-            : 'Complete your verification by scanning the QR code below with your Self app. This ensures your credentials remain private and secure.'}
-        </p>
+        <h2 className="text-xl font-semibold mb-6">Step 1: Verify Your Identity with Self Protocol</h2>
         
-        <div className="bg-yellow-50 p-3 rounded-md mb-6">
-          <p className="text-yellow-800 text-sm">
-            <span className="font-semibold">✓ Privacy Guarantee:</span> Your actual ID document never leaves your device. Only your verified name is shared to match with your ETHGlobal ticket.
-          </p>
-        </div>
-        
-        <div className="flex justify-center mb-6">
-          {isLoading ? (
-            <div className="animate-pulse bg-gray-200 w-[300px] h-[300px] flex items-center justify-center rounded-xl">
-              <div className="text-center p-4">
-                <div className="spin h-8 w-8 border-t-2 border-b-2 border-gray-500 mx-auto mb-3 rounded-full"></div>
-                <p>Loading QR code...</p>
+        <div className="flex flex-col justify-between items-center gap-8">
+          <div className="w-full">
+            <div className="mb-6">
+              <div className="flex items-center mb-3">
+                <div className="bg-blue-100 rounded-full p-1.5 mr-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <span className="font-medium">How it works</span>
               </div>
+              <ol className="list-decimal pl-8 text-sm text-light-text space-y-1.5">
+                <li>Scan this QR code with your Self app</li>
+                <li>Allow Self to confirm your verified details</li>
+                <li>Wait for confirmation to proceed</li>
+              </ol>
             </div>
-          ) : verificationStatus === 'success' ? (
-            <div className="bg-green-100 w-[300px] h-[300px] flex items-center justify-center rounded-xl shadow-md">
-              <div className="text-center p-6">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <p className="mt-4 font-medium text-green-700">Verification Successful</p>
+          </div>
+
+          <div className="flex justify-center items-center">
+            {verificationStatus === 'pending' ? (
+              <div className="animate-pulse bg-blue-50 w-[300px] h-[300px] flex items-center justify-center rounded-xl">
+                <div className="text-center p-4">
+                  <div className="spin h-8 w-8 border-t-2 border-b-2 border-gray-500 mx-auto mb-3 rounded-full"></div>
+                  <p>Loading QR code...</p>
+                </div>
               </div>
-            </div>
-          ) : selfApp ? (
-            <div className="rounded-xl shadow-md overflow-hidden border border-gray-200 p-6 bg-white flex flex-col items-center">
-              <p className="mb-4 text-sm text-gray-600">Open your Self app and scan this QR code</p>
-              <SelfQRcodeWrapper
-                selfApp={selfApp}
-                type="websocket"
-                onSuccess={handleSelfVerification}
-                size={250}
-              />
-              <p className="mt-4 text-xs text-gray-500">Your data remains private and controlled by you</p>
-            </div>
-          ) : (
-            <div className="animate-pulse bg-gray-200 w-[300px] h-[300px] flex items-center justify-center rounded-xl">
-              <div className="text-center p-4">
-                <div className="spin h-8 w-8 border-t-2 border-b-2 border-gray-500 mx-auto mb-3 rounded-full"></div>
-                <p>Initializing secure connection...</p>
+            ) : verificationStatus === 'success' ? (
+              <div className="bg-green-100 w-[300px] h-[300px] flex items-center justify-center rounded-xl shadow-md">
+                <div className="text-center p-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <p className="mt-4 font-medium text-green-700">Verification Successful</p>
+                </div>
               </div>
-            </div>
-          )}
+            ) : selfApp ? (
+              <div className="rounded-xl shadow-md overflow-hidden border border-gray-200 p-4 bg-white flex flex-col items-center">
+                <p className="mb-3 text-sm text-gray-600">Open your Self app and scan this QR code</p>
+                <SelfQRcodeWrapper
+                  selfApp={selfApp}
+                  type="websocket"
+                  onSuccess={handleSelfVerification}
+                  size={200}
+                />
+                <p className="mt-3 text-xs text-gray-500">Your data remains private and controlled by you</p>
+              </div>
+            ) : (
+              <div className="animate-pulse bg-gray-200 w-[300px] h-[300px] flex items-center justify-center rounded-xl">
+                <div className="text-center p-4">
+                  <div className="spin h-8 w-8 border-t-2 border-b-2 border-gray-500 mx-auto mb-3 rounded-full"></div>
+                  <p>Initializing secure connection...</p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         
         {renderStatus()}
         
-        {debugInfo && verificationStatus !== 'pending' && (
-          <div className={`mt-4 p-4 rounded-md ${
-            verificationStatus === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
-          }`}>
+        {debugInfo && verificationStatus !== 'pending' && verificationStatus !== 'success' && (
+          <div className="mt-4 p-4 rounded-md bg-red-50 text-red-700">
             <p className="text-sm">{debugInfo}</p>
-          </div>
-        )}
-        
-        {verificationStatus !== 'idle' && verificationStatus !== 'pending' && (
-          <div className="mt-6 flex justify-center">
-            <button
-              onClick={resetVerification}
-              className="btn-primary"
-            >
-              Begin New Verification
-            </button>
-          </div>
-        )}
-        
-        {/* Show ZkEmail verification section after successful Self verification */}
-        {verificationStatus === 'success' && (
-          <div className="mt-10 border-t pt-8">
-            <h2 className="text-xl font-semibold mb-2">Step 2: Verify Your ETHGlobal Taipei Ticket</h2>
-            <p className="mb-6 text-light-text">
-              Now that your identity has been verified, please upload your ETHGlobal Taipei ticket email to complete the verification process.
-            </p>
-            <ZkEmailVerifier />
           </div>
         )}
       </div>
@@ -420,13 +523,25 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-6 md:p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono flex flex-col">
         <h1 className="page-title">Zhat's Me</h1>
+        <p className="subtitle mb-5 text-center text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-500">Prove ETHGlobal Tickets Ownership Without Revealing Your ID</p>
         
         <div className="bg-blue-50 p-4 rounded-lg mb-6 max-w-md w-full text-center">
-          <h2 className="font-semibold text-blue-800 mb-2">ETHGlobal Hackathon Ticket Verification</h2>
+          <h2 className="font-semibold text-blue-800 mb-2">
+            {selectedEvent.name} Ticket Verification
+          </h2>
           <p className="text-blue-700 text-sm">
-            Securely verify your identity to claim your ETHGlobal Hackathon ticket. We'll confirm your name matches your ID (passport or ID card) without revealing or storing your actual identification document.
+            Verify your identity for your {selectedEvent.name} ticket without revealing your ID document.
           </p>
         </div>
+        
+        {/* Combined verification results */}
+        <VerificationResults 
+          selfVerified={selfVerified}
+          zkEmailVerified={zkEmailVerified}
+          userData={userData}
+          onReset={resetVerification}
+          eventName={selectedEvent.name}
+        />
         
         <div className="card w-full max-w-md p-8 animate-fade-in">
           {/* If user is verified through email link, show verified banner */}
@@ -471,17 +586,17 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="mb-8 w-full animate-fade-in">
-                  <h2 className="text-2xl font-semibold mb-4">Begin Your Verification</h2>
+                  <h2 className="text-2xl font-semibold mb-4">Begin Verification</h2>
                   <p className="mb-4 text-light-text">
-                    Verify your identity to claim your ETHGlobal Hackathon ticket with Self Protocol. This process will:
+                    Verify your identity to claim your ETHGlobal ticket. This process:
                   </p>
                   <ul className="list-disc pl-5 mb-4 text-light-text space-y-1">
-                    <li>Confirm your name matches what appears on your ID</li>
-                    <li>Generate a QR code to scan at the event</li>
-                    <li>Protect your privacy - your actual ID never leaves your device</li>
+                    <li>Confirms your name on your ID</li>
+                    <li>Generates an event QR code</li>
+                    <li>Keeps your ID private</li>
                   </ul>
                   <p className="mb-4 text-light-text">
-                    Please enter your email address below to start the verification process.
+                    Enter the email you used to receive your ETHGlobal ticket
                   </p>
                   
                   <form onSubmit={handleEmailSubmit} className="w-full">
@@ -527,9 +642,25 @@ export default function Home() {
             </>
           )}
           
-          {/* Only show QR code section if user has verified their email */}
-          {isVerified && renderQrCodeSection()}
+          {/* Only show QR code section if user has verified their email and not both verifications are complete */}
+          {isVerified && !(selfVerified && zkEmailVerified) && renderQrCodeSection()}
         </div>
+        
+        {/* Show ZkEmail verification section after successful Self verification */}
+        {selfVerified && !zkEmailVerified && (
+          <div className="card w-full max-w-4xl p-8 mt-8 animate-fade-in">
+            <h2 className="text-xl font-semibold mb-2">Step 2: Verify Your {selectedEvent.name} Ticket</h2>
+            <p className="mb-6 text-light-text">
+              Upload your {selectedEvent.name} ticket email to complete verification.
+            </p>
+            {/* Hide the individual verification results by passing the success callback */}
+            <ZkEmailVerifier 
+              onVerificationSuccess={handleZkEmailSuccess} 
+              hideResults={true}
+              eventName={selectedEvent.name}
+            />
+          </div>
+        )}
       </div>
     </main>
   );
