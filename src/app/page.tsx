@@ -271,6 +271,7 @@ function Home() {
               name: true,
               date_of_birth: true
             },
+            scope: appScope,
             devMode: true,
           }).build();
 
