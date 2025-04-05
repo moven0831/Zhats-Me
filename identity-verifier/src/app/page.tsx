@@ -25,12 +25,12 @@ export default function Home() {
   const [debugInfo, setDebugInfo] = useState<string>('');
   const [selfApp, setSelfApp] = useState<any>(null);
 
-  // URL for the ngrok tunnel
-  const NGROK_URL = "https://bf9c-111-235-226-130.ngrok-free.app";
+  // URL for the ngrok tunnel - ensure no trailing slash
+  const NGROK_URL = "https://7694-111-235-226-130.ngrok-free.app";
 
   useEffect(() => {
     // Generate a user ID when the component mounts
-    const newUserId = uuidv4();
+    const newUserId = `0x${uuidv4().replace(/-/g, '')}`;
     setUserId(newUserId);
     
     // For the QR code, generate a verification URL
@@ -48,24 +48,21 @@ export default function Home() {
           // Dynamically import SelfAppBuilder
           const { SelfAppBuilder } = await import('@selfxyz/qrcode');
           
-          // Initialize Self protocol app
+          // Use direct scope string for off-chain verification
+          const appScope = 'self-verification-scope';
+          
+          // Initialize Self protocol app with configuration for off-chain verification
           const app = new SelfAppBuilder({
-            appName: "Identity Verifier",
-            scope: "identity-verification-scope",
+            appName: "Self Verifier",
+            scope: appScope, 
             endpoint: `${NGROK_URL}/api/verify`,
             userId,
+            userIdType: "hex",
             disclosures: { 
-              // Request passport information
               name: true,
-              nationality: true,
-              date_of_birth: true,
-              
-              // Set verification rules
-              minimumAge: 18,
-              excludedCountries: ["IRN", "PRK", "RUS"],
-              ofac: true,
+              date_of_birth: true
             },
-            devMode: true, // Set to false for production
+            devMode: true,
           }).build();
 
           console.log("Self app initialized:", app);
@@ -79,13 +76,92 @@ export default function Home() {
     }
   }, [userId, NGROK_URL]);
 
-  const handleSelfVerification = () => {
+  // Fixing the type by matching the pattern from the example
+  // The onSuccess handler should be called with no parameters
+  const handleSelfVerification = async () => {
     setVerificationStatus('pending');
     
-    // Simulate successful verification
-    setTimeout(() => {
-      setVerificationStatus('success');
-    }, 1500);
+    try {
+      console.log('Verification initiated');
+      
+      // More robust approach - poll the status endpoint a few times
+      const checkStatus = async (retries = 5, delay = 1000) => {
+        for (let i = 0; i < retries; i++) {
+          try {
+            const response = await fetch(`${NGROK_URL}/api/verify/status?userId=${userId}`);
+            const result = await response.json();
+            
+            console.log(`Verification status attempt ${i+1}:`, result);
+            
+            if (result && result.success) {
+              setVerificationStatus('success');
+              
+              if (result.credentialSubject) {
+                const info = Object.entries(result.credentialSubject)
+                  .filter(([key, value]) => value !== undefined)
+                  .map(([key, value]) => `${key}: ${value}`)
+                  .join(', ');
+                
+                setDebugInfo(info);
+              }
+              return true;
+            } else if (i === retries - 1) {
+              // Only set error on last retry
+              setVerificationStatus('error');
+              let errorMessage = result?.message || 'Unknown verification error';
+              
+              if (result?.status === 'proof_generation_failed' || 
+                  (result?.message && result.message.includes('proof generation'))) {
+                errorMessage = 'Proof generation failed. Please ensure you have the required credentials in the Self app.';
+              }
+              
+              setDebugInfo(errorMessage);
+            }
+          } catch (error) {
+            console.error(`Error checking verification status (attempt ${i+1}):`, error);
+            if (i === retries - 1) {
+              setVerificationStatus('error');
+              setDebugInfo(error instanceof Error ? error.message : 'Unknown error');
+            }
+          }
+          
+          if (i < retries - 1) {
+            await new Promise(resolve => setTimeout(resolve, delay));
+          }
+        }
+        return false;
+      };
+      
+      // Wait a short time for the API to process before starting polling
+      await new Promise(resolve => setTimeout(resolve, 500));
+      checkStatus();
+      
+    } catch (error) {
+      console.error('Error handling verification:', error);
+      setVerificationStatus('error');
+      setDebugInfo(error instanceof Error ? error.message : 'Unknown error');
+    }
+  };
+
+  // Handle errors from the Self QR code component
+  const handleSelfError = (error: any) => {
+    console.error('Self verification error:', error);
+    setVerificationStatus('error');
+    
+    let errorMessage = 'Unknown error during verification';
+    
+    if (typeof error === 'string') {
+      errorMessage = error;
+    } else if (error && error.message) {
+      errorMessage = error.message;
+    } else if (error && error.status) {
+      errorMessage = `Status: ${error.status}`;
+      if (error.reason) {
+        errorMessage += ` - Reason: ${error.reason}`;
+      }
+    }
+    
+    setDebugInfo(errorMessage);
   };
 
   const renderStatus = () => {
@@ -109,7 +185,7 @@ export default function Home() {
         <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
           <h2 className="text-2xl font-semibold mb-4">Verify Your Identity</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-300">
-            Scan the QR code below with any QR code scanner to verify your identity.
+            Scan the QR code below with the Self app to verify your identity.
           </p>
           
           <div className="flex justify-center mb-6">
@@ -120,6 +196,7 @@ export default function Home() {
             ) : selfApp ? (
               <SelfQRcodeWrapper
                 selfApp={selfApp}
+                type="websocket"
                 onSuccess={handleSelfVerification}
                 size={250}
               />
@@ -131,6 +208,13 @@ export default function Home() {
           </div>
           
           {renderStatus()}
+          
+          {debugInfo && (
+            <div className="mt-4 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs">
+              <p className="font-semibold">Debug Info:</p>
+              <p>{debugInfo}</p>
+            </div>
+          )}
           
           {userId && (
             <p className="mt-4 text-sm text-gray-500">
