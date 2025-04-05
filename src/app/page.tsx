@@ -59,31 +59,31 @@ function VerificationResults({ selfVerified, zkEmailVerified, userData, onReset,
   }
   
   return (
-    <div className="mt-8 w-full animate-fade-in">
-      <div className={`rounded-xl p-6 shadow-md border ${
+    <div className="mt-6 w-full animate-fade-in">
+      <div className={`rounded-md p-4 border ${
         allVerified 
-          ? 'bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border-green-200 dark:border-green-800' 
-          : 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-blue-200 dark:border-blue-800'
-      }`}>
+          ? 'bg-green-50/20 dark:bg-green-900/20 border-green-200/20 dark:border-green-800/20' 
+          : 'bg-blue-50/20 dark:bg-blue-900/20 border-blue-200/20 dark:border-blue-800/20'
+      } backdrop-blur-md`}>
         <div className="flex items-start">
-          <div className={`p-3 rounded-full mr-4 ${
+          <div className={`p-2 rounded-full mr-3 ${
             allVerified 
-              ? 'bg-green-100 dark:bg-green-900/50' 
-              : 'bg-blue-100 dark:bg-blue-900/50'
+              ? 'bg-green-100/50 dark:bg-green-900/30' 
+              : 'bg-blue-100/50 dark:bg-blue-900/30'
           }`}>
             {allVerified ? (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-green-600 dark:text-green-400">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-green-600 dark:text-green-400">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
               </svg>
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-blue-600 dark:text-blue-400">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-blue-600 dark:text-blue-400">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             )}
           </div>
           
           <div className="flex-1">
-            <h3 className={`text-xl font-bold ${
+            <h3 className={`text-lg font-bold ${
               allVerified 
                 ? 'text-green-800 dark:text-green-300' 
                 : 'text-blue-800 dark:text-blue-300'
@@ -93,64 +93,64 @@ function VerificationResults({ selfVerified, zkEmailVerified, userData, onReset,
                 : 'Verification In Progress'}
             </h3>
             
-            <div className="mt-4 space-y-3">
+            <div className="mt-3 space-y-2">
               <div className="flex items-center">
-                <div className={`w-5 h-5 rounded-full flex items-center justify-center mr-3 ${
+                <div className={`w-4 h-4 rounded-full flex items-center justify-center mr-2 ${
                   selfVerified 
                     ? 'bg-green-500 dark:bg-green-600' 
                     : 'bg-gray-300 dark:bg-gray-700'
                 }`}>
                   {selfVerified && (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-2.5 h-2.5 text-white">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
                   )}
                 </div>
-                <span className={selfVerified 
+                <span className={`text-sm ${selfVerified 
                   ? 'text-green-700 dark:text-green-400' 
                   : 'text-gray-500 dark:text-gray-400'
-                }>
+                }`}>
                   Identity verification {selfVerified ? 'complete' : 'pending'}
                 </span>
               </div>
               
               <div className="flex items-center">
-                <div className={`w-5 h-5 rounded-full flex items-center justify-center mr-3 ${
+                <div className={`w-4 h-4 rounded-full flex items-center justify-center mr-2 ${
                   zkEmailVerified 
                     ? 'bg-green-500 dark:bg-green-600' 
                     : 'bg-gray-300 dark:bg-gray-700'
                 }`}>
                   {zkEmailVerified && (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-2.5 h-2.5 text-white">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
                   )}
                 </div>
-                <span className={zkEmailVerified 
+                <span className={`text-sm ${zkEmailVerified 
                   ? 'text-green-700 dark:text-green-400' 
                   : 'text-gray-500 dark:text-gray-400'
-                }>
+                }`}>
                   Ticket verification {zkEmailVerified ? 'complete' : 'pending'}
                 </span>
               </div>
             </div>
             
             {allVerified && (
-              <div className="mt-6 p-4 bg-white/70 dark:bg-slate-800/70 rounded-lg border border-green-200 dark:border-green-800">
-                <h4 className="font-medium text-green-800 dark:text-green-300 mb-2">You're all set for {eventName}!</h4>
-                <p className="text-sm text-green-700 dark:text-green-400">
+              <div className="mt-4 p-3 bg-white/40 dark:bg-slate-800/40 rounded-md border border-green-200/20 dark:border-green-800/20">
+                <h4 className="font-medium text-green-800 dark:text-green-300 text-sm mb-1">You're all set for {eventName}!</h4>
+                <p className="text-xs text-green-700 dark:text-green-400">
                   Your identity and ticket have been verified. We look forward to seeing you at the event!
                 </p>
                 
                 {userData && Object.keys(userData).length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-green-200 dark:border-green-800">
+                  <div className="mt-2 pt-2 border-t border-green-200/20 dark:border-green-800/20">
                     <p className="text-xs text-green-600 dark:text-green-500 mb-1">Verified information:</p>
                     <div className="space-y-1">
                       {userData.name && (
-                        <p className="text-sm text-green-700 dark:text-green-400">Name: <span className="font-medium">{userData.name}</span></p>
+                        <p className="text-xs text-green-700 dark:text-green-400">Name: <span className="font-medium">{userData.name}</span></p>
                       )}
                       {userData.dateOfBirth && (
-                        <p className="text-sm text-green-700 dark:text-green-400">Date of Birth: <span className="font-medium">{userData.dateOfBirth}</span></p>
+                        <p className="text-xs text-green-700 dark:text-green-400">Date of Birth: <span className="font-medium">{userData.dateOfBirth}</span></p>
                       )}
                     </div>
                   </div>
@@ -159,8 +159,8 @@ function VerificationResults({ selfVerified, zkEmailVerified, userData, onReset,
             )}
             
             {selfVerified && !zkEmailVerified && (
-              <div className="mt-4">
-                <p className="text-blue-700 dark:text-blue-400 text-sm">
+              <div className="mt-3">
+                <p className="text-blue-700 dark:text-blue-400 text-xs">
                   Please complete the ticket verification step below.
                 </p>
               </div>
@@ -169,10 +169,10 @@ function VerificationResults({ selfVerified, zkEmailVerified, userData, onReset,
         </div>
         
         {allVerified && (
-          <div className="mt-6 flex justify-center">
+          <div className="mt-4 flex justify-end">
             <button
               onClick={onReset}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium transition-all shadow-sm hover:shadow"
+              className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-md text-xs font-medium transition-colors"
             >
               Start New Verification
             </button>
@@ -545,14 +545,14 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-6 md:p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono flex flex-col">
         <h1 className="page-title">Zhat's Me</h1>
-        <p className="subtitle mb-5 text-center text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-500">Prove ETHGlobal ticket ownership without revealing your ID</p>
+        <p className="subtitle mb-5 text-center text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-500">Prove ETHGlobal Tickets Ownership Without Revealing Your ID</p>
         
         <div className="bg-blue-50 p-4 rounded-lg mb-6 max-w-md w-full text-center">
           <h2 className="font-semibold text-blue-800 mb-2">
             {selectedEvent.name} Ticket Verification
           </h2>
           <p className="text-blue-700 text-sm">
-            Securely verify your identity to claim your {selectedEvent.name} ticket. We&apos;ll confirm your name matches your ID (passport or ID card) without revealing or storing your actual identification document.
+            Verify your identity for your {selectedEvent.name} ticket without revealing your ID document.
           </p>
         </div>
         
@@ -608,17 +608,17 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="mb-8 w-full animate-fade-in">
-                  <h2 className="text-2xl font-semibold mb-4">Begin Your Verification</h2>
+                  <h2 className="text-2xl font-semibold mb-4">Begin Verification</h2>
                   <p className="mb-4 text-light-text">
-                    Verify your identity to claim your ETHGlobal Hackathon ticket with Self Protocol. This process will:
+                    Verify your identity to claim your ETHGlobal ticket. This process:
                   </p>
                   <ul className="list-disc pl-5 mb-4 text-light-text space-y-1">
-                    <li>Confirm your name matches what appears on your ID</li>
-                    <li>Generate a QR code to scan at the event</li>
-                    <li>Protect your privacy - your actual ID never leaves your device</li>
+                    <li>Confirms your name on your ID</li>
+                    <li>Generates an event QR code</li>
+                    <li>Keeps your ID private</li>
                   </ul>
                   <p className="mb-4 text-light-text">
-                    Enter the email you used to receive your {selectedEvent.name} ticket.
+                    Enter the email you used to receive your ETHGlobal ticket
                   </p>
                   
                   <form onSubmit={handleEmailSubmit} className="w-full">
@@ -673,7 +673,7 @@ export default function Home() {
           <div className="card w-full max-w-4xl p-8 mt-8 animate-fade-in">
             <h2 className="text-xl font-semibold mb-2">Step 2: Verify Your {selectedEvent.name} Ticket</h2>
             <p className="mb-6 text-light-text">
-              Now that your identity has been verified, please upload your {selectedEvent.name} ticket email to complete the verification process.
+              Upload your {selectedEvent.name} ticket email to complete verification.
             </p>
             {/* Hide the individual verification results by passing the success callback */}
             <ZkEmailVerifier 
