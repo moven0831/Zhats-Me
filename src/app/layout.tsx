@@ -56,10 +56,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
         <EventContext.Provider value={{ selectedEvent, setSelectedEvent: (event) => setSelectedEvent(event) }}>
-          <header className="sticky top-0 z-10 backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 shadow-sm">
+          <header className="sticky top-0 z-10 backdrop-blur-xl bg-white/10 dark:bg-slate-900/10 border-b border-slate-200/20 dark:border-slate-800/20 shadow-sm">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
               <div className="flex items-center">
-                <span className="text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="text-2xl font-extrabold bg-gradient-to-r from-primary-color to-accent-color bg-clip-text text-transparent text-glow">
                   Zhat&apos;s Me
                 </span>
               </div>
@@ -68,7 +68,7 @@ export default function RootLayout({
                   <select
                     value={selectedEvent.id}
                     onChange={(e) => handleEventChange(e.target.value)}
-                    className="appearance-none cursor-pointer text-sm font-medium pl-3 pr-8 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700"
+                    className="appearance-none cursor-pointer text-sm font-medium pl-3 pr-8 py-1 rounded-full bg-white/10 dark:bg-blue-900/10 text-blue-800 dark:text-blue-300 border border-blue-200/30 dark:border-blue-800/30 focus:outline-none focus:ring-2 focus:ring-blue-300/50 dark:focus:ring-blue-700/50 backdrop-filter backdrop-blur-md"
                   >
                     {events.map((event) => (
                       <option key={event.id} value={event.id}>
@@ -90,7 +90,7 @@ export default function RootLayout({
               {children}
             </div>
           </main>
-          <footer className="border-t border-slate-200 dark:border-slate-800 py-6 bg-slate-50 dark:bg-slate-900">
+          <footer className="border-t border-slate-200/20 dark:border-slate-800/20 py-6 bg-white/5 dark:bg-slate-900/5 backdrop-blur-md">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 ETHGlobal Hackathon Ticket Verification • Privacy-Preserving Identity Verification

@@ -37,7 +37,7 @@ export default function SelfQRCode({ selfApp, onSuccess }: SelfQRCodeProps) {
 
   if (error) {
     return (
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 shadow-sm">
+      <div className="bg-red-50/30 dark:bg-red-900/10 border border-red-200/30 dark:border-red-800/30 rounded-xl p-4 shadow-sm backdrop-blur-md">
         <div className="flex items-start">
           <div className="flex-shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-red-500 dark:text-red-400 mt-0.5">
@@ -58,12 +58,12 @@ export default function SelfQRCode({ selfApp, onSuccess }: SelfQRCodeProps) {
 
   if (!QRComponent) {
     return (
-      <div className="relative flex flex-col items-center justify-center rounded-xl bg-gradient-to-r from-slate-100 to-gray-100 dark:from-slate-800 dark:to-gray-900 p-4 shadow-sm border border-slate-200 dark:border-slate-700 w-[280px] h-[280px] overflow-hidden">
+      <div className="relative flex flex-col items-center justify-center rounded-xl bg-gradient-to-r from-slate-100/50 to-gray-100/50 dark:from-slate-800/50 dark:to-gray-900/50 p-4 shadow-sm border border-slate-200/30 dark:border-slate-700/30 w-[280px] h-[280px] overflow-hidden backdrop-blur-xl neon-border">
         <div className="animate-pulse flex flex-col items-center justify-center">
-          <div className="w-[200px] h-[200px] bg-slate-300 dark:bg-slate-700 rounded-lg mb-3 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-slate-200 dark:via-slate-600 to-transparent blur-sm animate-shimmer"></div>
+          <div className="w-[200px] h-[200px] bg-slate-300/50 dark:bg-slate-700/50 rounded-lg mb-3 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-slate-200/70 dark:via-slate-600/70 to-transparent blur-sm animate-shimmer"></div>
           </div>
-          <div className="h-4 w-32 bg-slate-300 dark:bg-slate-700 rounded"></div>
+          <div className="h-4 w-32 bg-slate-300/50 dark:bg-slate-700/50 rounded"></div>
         </div>
         <div className="absolute bottom-3 text-xs text-slate-500 dark:text-slate-400">Loading QR code...</div>
       </div>
@@ -73,11 +73,11 @@ export default function SelfQRCode({ selfApp, onSuccess }: SelfQRCodeProps) {
   // Render the Self QR code component with customized styling
   const QR = QRComponent;
   return (
-    <div className="rounded-xl p-4 bg-white dark:bg-slate-900 shadow-md border border-slate-200 dark:border-slate-700 flex flex-col items-center">
+    <div className="rounded-xl p-4 bg-white/50 dark:bg-slate-900/50 shadow-md border border-slate-200/30 dark:border-slate-700/30 flex flex-col items-center backdrop-blur-xl neon-border">
       <div className="mb-2 text-center">
-        <span className="text-sm text-slate-500 dark:text-slate-400">Scan with Self App</span>
+        <span className="text-sm text-slate-500 dark:text-slate-400 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-gradient-to-r after:from-primary-color after:to-accent-color">Scan with Self App</span>
       </div>
-      <div className="p-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+      <div className="p-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm futuristic-chip">
         <QR
           selfApp={selfApp}
           onSuccess={onSuccess}
@@ -85,8 +85,8 @@ export default function SelfQRCode({ selfApp, onSuccess }: SelfQRCodeProps) {
         />
       </div>
       <div className="mt-4 text-center">
-        <span className="text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2 py-1 rounded-full font-medium">
-          QR Code Loaded Successfully
+        <span className="text-xs bg-primary-color/10 dark:bg-primary-color/20 text-primary-color dark:text-primary-hover px-3 py-1.5 rounded-full font-medium backdrop-blur-md">
+          QR Code Ready
         </span>
       </div>
     </div>

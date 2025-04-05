@@ -618,7 +618,7 @@ export default function Home() {
                     <li>Protect your privacy - your actual ID never leaves your device</li>
                   </ul>
                   <p className="mb-4 text-light-text">
-                    Please enter your email address below to start the verification process.
+                    Enter the email you used to receive your {selectedEvent.name} ticket.
                   </p>
                   
                   <form onSubmit={handleEmailSubmit} className="w-full">

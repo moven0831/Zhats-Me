@@ -149,12 +149,12 @@ export default function ZkEmailVerifier({
   // Don't render individual verification results if hideResults is true and verification is successful
   if (hideResults && isVerified) {
     return (
-      <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+      <div className="p-4 bg-green-50/30 dark:bg-green-900/10 rounded-lg border border-green-200/30 dark:border-green-800/30 backdrop-blur-md neon-border">
         <div className="flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-3 text-green-600 dark:text-green-400">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span className="text-green-700 dark:text-green-400">
+          <span className="text-green-700 dark:text-green-400 text-glow">
             {eventName} ticket verification complete!
           </span>
         </div>
@@ -164,8 +164,8 @@ export default function ZkEmailVerifier({
 
   return (
     <div className="w-full animate-fade-in">
-      <div className="mb-6 text-center">
-        <h2 className="text-3xl font-bold mb-3 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+      <div className="mb-8 text-center">
+        <h2 className="text-3xl font-bold mb-3 bg-gradient-to-r from-primary-color to-accent-color bg-clip-text text-transparent text-glow">
           Verify Your {eventName} Ticket
         </h2>
         <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
@@ -173,9 +173,9 @@ export default function ZkEmailVerifier({
         </p>
       </div>
       
-      <div className="bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/30 p-4 rounded-xl border border-amber-200 dark:border-amber-800 mb-8 shadow-sm">
+      <div className="bg-gradient-to-r from-amber-50/30 to-yellow-50/30 dark:from-amber-950/20 dark:to-yellow-950/20 p-4 rounded-xl border border-amber-200/30 dark:border-amber-800/30 mb-8 shadow-sm backdrop-blur-md futuristic-chip">
         <div className="flex items-start space-x-3">
-          <div className="p-1 bg-amber-100 dark:bg-amber-900/50 rounded-full">
+          <div className="p-1 bg-amber-100/50 dark:bg-amber-900/30 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-amber-600 dark:text-amber-400">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
             </svg>
@@ -189,191 +189,118 @@ export default function ZkEmailVerifier({
         </div>
       </div>
       
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 p-6 mb-8">
+      <div className="bg-white/50 dark:bg-slate-800/50 rounded-xl shadow-md border border-slate-200/30 dark:border-slate-700/30 p-6 mb-8 backdrop-blur-xl neon-border">
         <p className="mb-4 text-slate-700 dark:text-slate-300">
           Upload your {eventName} ticket email file (.eml format) to verify your participation eligibility.
         </p>
         
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-4 rounded-xl border border-blue-200 dark:border-blue-800 mb-6">
+        <div className="bg-gradient-to-r from-blue-50/30 to-indigo-50/30 dark:from-blue-950/20 dark:to-indigo-950/20 p-4 rounded-xl border border-blue-200/30 dark:border-blue-800/30 mb-6 backdrop-blur-md">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h3 className="font-medium text-blue-800 dark:text-blue-300 mb-1 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-1">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                Don't have your ticket email?
+                Upload Ticket Email
               </h3>
-              <p className="text-blue-700 dark:text-blue-400 text-sm">
-                Download our sample ticket for testing the verification process.
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Select the .eml file you received from the {eventName} team
               </p>
-            </div>
-            <a 
-              href="/sample-ethglobal-ticket.eml" 
-              download
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium transition-all shadow-sm hover:shadow flex items-center justify-center whitespace-nowrap"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-1">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-              </svg>
-              Download Sample Ticket
-            </a>
-          </div>
-        </div>
-        
-        <div className="space-y-6">
-          <div className="group relative border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-6 transition-all hover:border-indigo-400 dark:hover:border-indigo-500 focus-within:border-indigo-400 dark:focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-400/20 dark:focus-within:ring-indigo-500/20">
-            <input
-              type="file"
-              accept=".eml"
-              onChange={handleFileUpload}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-            />
-            <div className="text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mx-auto h-12 w-12 text-slate-400 group-hover:text-indigo-500 transition-all">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-              </svg>
-              <div className="mt-4 flex text-sm leading-6 text-slate-600 dark:text-slate-400">
-                <span className="font-semibold text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-500 transition-all">Click to upload</span>
-                <span className="pl-1">or drag and drop</span>
-              </div>
-              <p className="text-xs text-slate-500 dark:text-slate-500">
-                {eventName} email ticket in .eml format
-              </p>
-            </div>
-          </div>
-          
-          {fileContent && (
-            <div className="flex items-center text-sm text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-200 dark:border-green-800">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Email file loaded successfully
-            </div>
-          )}
-          
-          <div className="flex flex-wrap gap-4">
-            <button
-              onClick={generateProofLocally}
-              disabled={isLoadingClient || isLoadingServer || !fileContent}
-              className={`relative px-5 py-3 rounded-lg text-sm font-medium transition-all ${
-                isLoadingClient || isLoadingServer || !fileContent
-                  ? 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
-                  : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow'
-              }`}
-            >
-              {isLoadingClient ? (
-                <span className="flex items-center">
-                  <span className="spin h-4 w-4 border-t-2 border-b-2 border-white rounded-full mr-2"></span>
-                  Generating Proof Locally...
-                </span>
-              ) : (
-                <span className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
-                  </svg>
-                  Generate Proof Locally
-                </span>
-              )}
-            </button>
-            
-            <button
-              onClick={generateProofRemotely}
-              disabled={isLoadingClient || isLoadingServer || !fileContent}
-              className={`relative px-5 py-3 rounded-lg text-sm font-medium transition-all ${
-                isLoadingClient || isLoadingServer || !fileContent
-                  ? 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
-                  : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow'
-              }`}
-            >
-              {isLoadingServer ? (
-                <span className="flex items-center">
-                  <span className="spin h-4 w-4 border-t-2 border-b-2 border-white rounded-full mr-2"></span>
-                  Generating Proof Remotely...
-                </span>
-              ) : (
-                <span className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
-                  </svg>
-                  Generate Proof Remotely
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      {isLoadingClient && (
-        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl mb-6 animate-pulse">
-          <div className="flex items-center">
-            <span className="spin h-5 w-5 border-t-2 border-b-2 border-blue-600 dark:border-blue-400 rounded-full mr-3"></span>
-            <p className="text-blue-700 dark:text-blue-400">
-              Generating proof locally. This may take several minutes depending on your device...
-            </p>
-          </div>
-        </div>
-      )}
-      
-      {verificationMessage && (
-        <div className={`p-4 rounded-xl mb-6 animate-fade-in ${
-          isVerified 
-          ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400' 
-          : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'
-        }`}>
-          <div className="flex items-start">
-            {isVerified ? (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-3 text-green-600 dark:text-green-400">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-3 text-red-600 dark:text-red-400">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-              </svg>
-            )}
-            <p>{verificationMessage}</p>
-          </div>
-        </div>
-      )}
-      
-      {isVerified && !hideResults && (
-        <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 p-6 rounded-xl border border-green-200 dark:border-green-800 mb-6 shadow-md animate-fade-in">
-          <div className="flex items-center mb-3">
-            <div className="bg-green-100 dark:bg-green-900/50 p-2 rounded-full mr-4">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-green-600 dark:text-green-400">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-              </svg>
             </div>
             <div>
-              <h3 className="font-bold text-xl text-green-800 dark:text-green-300">Verification Successful</h3>
-              <p className="text-green-700 dark:text-green-400">
-                Your {eventName} ticket has been verified using Zero-Knowledge proofs.
-              </p>
+              <label className="relative inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-primary-color hover:bg-primary-hover rounded-md shadow-sm cursor-pointer transition-all duration-150 ease-in-out overflow-hidden group">
+                <span className="relative z-10">Select Email File</span>
+                <span className="absolute inset-0 bg-white/10 w-0 group-hover:w-full transition-all duration-300 ease-out"></span>
+                <input
+                  type="file"
+                  accept=".eml"
+                  onChange={handleFileUpload}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+              </label>
             </div>
           </div>
-          <div className="pl-16">
-            <p className="text-green-700 dark:text-green-400 text-sm">
-              You're all set to participate in the hackathon! Your eligibility has been confirmed without exposing personal data.
-            </p>
-          </div>
+          {fileContent && (
+            <div className="mt-3 pt-3 border-t border-blue-100 dark:border-blue-800/30">
+              <div className="flex items-center text-green-600 dark:text-green-400">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="text-sm">Email file loaded successfully</span>
+              </div>
+            </div>
+          )}
         </div>
-      )}
-      
-      {proof && !hideResults && (
-        <div className="mt-6 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden animate-slide-in-right">
-          <div className="bg-slate-100 dark:bg-slate-800 px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-            <h3 className="font-mono text-sm font-medium text-slate-700 dark:text-slate-300">Proof Details</h3>
-            <button 
-              onClick={() => navigator.clipboard.writeText(formatProofAsStr(proof))}
-              className="text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 px-2 py-1 rounded transition-colors"
-            >
-              Copy to clipboard
-            </button>
-          </div>
-          <pre className="p-4 overflow-auto text-xs font-mono text-slate-700 dark:text-slate-300 max-h-60">
-            {formatProofAsStr(proof)}
-          </pre>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <button
+            onClick={generateProofLocally}
+            disabled={!fileContent || isLoadingClient || isLoadingServer}
+            className="w-full relative btn-primary group"
+          >
+            <span className="relative z-10 flex items-center justify-center">
+              {isLoadingClient ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Verifying Locally...
+                </>
+              ) : (
+                <>Verify Locally</>
+              )}
+            </span>
+            <span className="absolute inset-0 bg-white/10 w-0 group-hover:w-full transition-all duration-300 ease-out"></span>
+          </button>
+          <button
+            onClick={generateProofRemotely}
+            disabled={!fileContent || isLoadingClient || isLoadingServer}
+            className="w-full relative bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-150 ease-in-out group"
+          >
+            <span className="relative z-10 flex items-center justify-center">
+              {isLoadingServer ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Verifying on Server...
+                </>
+              ) : (
+                <>Verify on Server</>
+              )}
+            </span>
+            <span className="absolute inset-0 bg-white/10 w-0 group-hover:w-full transition-all duration-300 ease-out"></span>
+          </button>
         </div>
-      )}
+        
+        {verificationMessage && (
+          <div className={`mt-4 p-4 rounded-lg backdrop-blur-md ${isVerified ? 'text-green-700 bg-green-50/50 dark:text-green-400 dark:bg-green-900/20 border border-green-200/30 dark:border-green-800/30' : 'text-red-700 bg-red-50/50 dark:text-red-400 dark:bg-red-900/20 border border-red-200/30 dark:border-red-800/30'}`}>
+            <div className="flex">
+              {isVerified ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-green-500 dark:text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-red-500 dark:text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              )}
+              <span>{verificationMessage}</span>
+            </div>
+          </div>
+        )}
+        
+        {proof && !hideResults && (
+          <div className="mt-6">
+            <h3 className="font-medium text-slate-800 dark:text-slate-200 mb-2">Proof Details</h3>
+            <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200/30 dark:border-slate-700/30 rounded-md shadow-inner p-3 overflow-auto text-xs font-mono">
+              <pre>{formatProofAsStr(proof)}</pre>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 } 
