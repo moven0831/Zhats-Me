@@ -219,9 +219,6 @@ function Home() {
   const [zkEmailVerified, setZkEmailVerified] = useState(false);
   const [userData, setUserData] = useState<any>(null);
 
-  // URL for the ngrok tunnel - ensure no trailing slash
-  const NGROK_URL = "https://7694-111-235-226-130.ngrok-free.app";
-
   // Reset all verification states
   const resetVerification = () => {
     setVerificationStatus('idle');
@@ -236,9 +233,7 @@ function Home() {
     if (isVerified && emailFromParam && userIdFromParam) {
       setEmail(emailFromParam);
       setUserId(userIdFromParam);
-      
-      // For the QR code, generate a verification URL
-      const fallbackValue = `${NGROK_URL}/api/verify?id=${userIdFromParam}`;
+    
       _setQrValue(fallbackValue);
       
       _setIsLoading(false);
@@ -246,14 +241,10 @@ function Home() {
       // Generate a user ID when the component mounts
       const newUserId = `0x${uuidv4().replace(/-/g, '')}`;
       setUserId(newUserId);
-      
-      // For the QR code, generate a verification URL
-      const fallbackValue = `${NGROK_URL}/api/verify?id=${newUserId}`;
+    
       _setQrValue(fallbackValue);
       
-      _setIsLoading(false);
-    }
-  }, [NGROK_URL, isVerified, emailFromParam, userIdFromParam]);
+      _setIsLoading(false)
 
   useEffect(() => {
     // Initialize Self app
@@ -268,9 +259,7 @@ function Home() {
           
           // Initialize Self protocol app with configuration for off-chain verification
           const app = new SelfAppBuilder({
-            appName: "Zhat's Me Verifier",
-            scope: appScope, 
-            endpoint: `${NGROK_URL}/api/verify`,
+            appName: "Zhat's Me Verifier"
             userId,
             userIdType: "hex",
             disclosures: { 
@@ -287,9 +276,7 @@ function Home() {
         }
       };
       
-      initSelfApp();
-    }
-  }, [userId, emailVerificationStatus, isVerified, NGROK_URL]);
+      initSelfApp()
 
   // Handle email form submission
   const handleEmailSubmit = async (e: React.FormEvent) => {
@@ -371,9 +358,7 @@ function Home() {
       
       // More robust approach - poll the status endpoint a few times
       const checkStatus = async (retries = 5, delay = 1000) => {
-        for (let i = 0; i < retries; i++) {
-          try {
-            const response = await fetch(`${NGROK_URL}/api/verify/status?userId=${userId}`);
+        for (let i = 0; i < retries; i++) 
             const result = await response.json();
             
             console.log(`Verification status attempt ${i+1}:`, result);

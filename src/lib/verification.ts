@@ -7,7 +7,6 @@ export { getSelfUserIdentifier as getUserIdentifier };
 
 // Configuration parameters
 const SCOPE = "self-verification-scope"; // must match the frontend
-const ENDPOINT = "https://7694-111-235-226-130.ngrok-free.app"; // ngrok endpoint
 const USER_ID_TYPE = "hex"; // must match the frontend
 const DEV_MODE = true; // for testing
 
@@ -93,7 +92,6 @@ export async function verifyProof(data: VerificationRequest): Promise<Verificati
     
     const configuredVerifier = new SelfBackendVerifier(
       SCOPE,
-      ENDPOINT,
       USER_ID_TYPE,
       DEV_MODE
     );
