@@ -315,11 +315,17 @@ export default function Home() {
     return (
       <div className="w-full animate-fade-in">
         <h2 className="text-2xl font-semibold mb-4">Secure Identity Verification</h2>
-        <p className="mb-6 text-light-text">
+        <p className="mb-4 text-light-text">
           {verificationStatus === 'success' 
             ? 'Congratulations! Your identity has been securely verified through Self Protocol.'
             : 'Complete your verification by scanning the QR code below with your Self app. This ensures your credentials remain private and secure.'}
         </p>
+        
+        <div className="bg-yellow-50 p-3 rounded-md mb-6">
+          <p className="text-yellow-800 text-sm">
+            <span className="font-semibold">✓ Privacy Guarantee:</span> Your actual ID document never leaves your device. Only your verified name is shared to match with your ETHGlobal ticket.
+          </p>
+        </div>
         
         <div className="flex justify-center mb-6">
           {isLoading ? (
@@ -388,6 +394,13 @@ export default function Home() {
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono flex flex-col">
         <h1 className="page-title">Zhat's Me</h1>
         
+        <div className="bg-blue-50 p-4 rounded-lg mb-6 max-w-md w-full text-center">
+          <h2 className="font-semibold text-blue-800 mb-2">ETHGlobal Hackathon Ticket Verification</h2>
+          <p className="text-blue-700 text-sm">
+            Securely verify your identity to claim your ETHGlobal Hackathon ticket. We'll confirm your name matches your ID (passport or ID card) without revealing or storing your actual identification document.
+          </p>
+        </div>
+        
         <div className="card w-full max-w-md p-8 animate-fade-in">
           {/* If user is verified through email link, show verified banner */}
           {isVerified && (
@@ -433,7 +446,15 @@ export default function Home() {
                 <div className="mb-8 w-full animate-fade-in">
                   <h2 className="text-2xl font-semibold mb-4">Begin Your Verification</h2>
                   <p className="mb-4 text-light-text">
-                    Secure your identity with Self Protocol. Please enter your email address below to start the verification process.
+                    Verify your identity to claim your ETHGlobal Hackathon ticket with Self Protocol. This process will:
+                  </p>
+                  <ul className="list-disc pl-5 mb-4 text-light-text space-y-1">
+                    <li>Confirm your name matches what appears on your ID</li>
+                    <li>Generate a QR code to scan at the event</li>
+                    <li>Protect your privacy - your actual ID never leaves your device</li>
+                  </ul>
+                  <p className="mb-4 text-light-text">
+                    Please enter your email address below to start the verification process.
                   </p>
                   
                   <form onSubmit={handleEmailSubmit} className="w-full">

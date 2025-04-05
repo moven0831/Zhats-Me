@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Zhat's Me",
-  description: "Secure and private identity verification powered by Self Protocol - verify without sharing your personal data",
+  title: "Zhat's Me | ETHGlobal Hackathon Ticket Verification",
+  description: "Securely verify your identity to claim your ETHGlobal Hackathon ticket without revealing your ID document. Powered by Self Protocol.",
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <header className="w-full border-b p-4 flex justify-center">
-          <div className="max-w-5xl w-full flex items-center">
+          <div className="max-w-5xl w-full flex items-center justify-between">
             <div className="flex items-center">
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
                 Zhat's Me
@@ -37,13 +37,16 @@ export default function RootLayout({
                 by Self Protocol
               </span>
             </div>
+            <div className="hidden md:block">
+              <span className="text-sm font-medium">ETHGlobal Hackathon Ticket Verification</span>
+            </div>
           </div>
         </header>
         <div className="min-h-[calc(100vh-5rem)]">
           {children}
         </div>
         <footer className="w-full border-t p-4 text-center text-sm text-gray-500">
-          <p>Powered by Self Protocol • Privacy-Preserving Identity Verification • Your credentials, your control</p>
+          <p>ETHGlobal Hackathon Ticket Verification • Powered by Self Protocol • Privacy-Preserving Identity Verification</p>
         </footer>
       </body>
     </html>
