@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { v4 as uuidv4 } from 'uuid';
+import { useSearchParams } from 'next/navigation';
 
 // Dynamically import the Self QR code component
 const SelfQRcodeWrapper = dynamic(
@@ -18,6 +19,11 @@ const SelfQRcodeWrapper = dynamic(
 );
 
 export default function Home() {
+  const searchParams = useSearchParams();
+  const isVerified = searchParams.get('verified') === 'true';
+  const emailFromParam = searchParams.get('email');
+  const userIdFromParam = searchParams.get('userId');
+
   const [verificationStatus, setVerificationStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
   const [isLoading, setIsLoading] = useState(true);
   const [qrValue, setQrValue] = useState('');
@@ -25,25 +31,42 @@ export default function Home() {
   const [debugInfo, setDebugInfo] = useState<string>('');
   const [selfApp, setSelfApp] = useState<any>(null);
   const [timer, setTimer] = useState<number>(0);
+  
+  // Email verification states
+  const [email, setEmail] = useState<string>('');
+  const [emailVerificationStatus, setEmailVerificationStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
+  const [emailMessage, setEmailMessage] = useState<string>('');
 
   // URL for the ngrok tunnel - ensure no trailing slash
   const NGROK_URL = "https://7694-111-235-226-130.ngrok-free.app";
 
   useEffect(() => {
-    // Generate a user ID when the component mounts
-    const newUserId = `0x${uuidv4().replace(/-/g, '')}`;
-    setUserId(newUserId);
-    
-    // For the QR code, generate a verification URL
-    const fallbackValue = `${NGROK_URL}/api/verify?id=${newUserId}`;
-    setQrValue(fallbackValue);
-    
-    setIsLoading(false);
-  }, [NGROK_URL]);
+    // Check if we're returning from email verification
+    if (isVerified && emailFromParam && userIdFromParam) {
+      setEmail(emailFromParam);
+      setUserId(userIdFromParam);
+      
+      // For the QR code, generate a verification URL
+      const fallbackValue = `${NGROK_URL}/api/verify?id=${userIdFromParam}`;
+      setQrValue(fallbackValue);
+      
+      setIsLoading(false);
+    } else {
+      // Generate a user ID when the component mounts
+      const newUserId = `0x${uuidv4().replace(/-/g, '')}`;
+      setUserId(newUserId);
+      
+      // For the QR code, generate a verification URL
+      const fallbackValue = `${NGROK_URL}/api/verify?id=${newUserId}`;
+      setQrValue(fallbackValue);
+      
+      setIsLoading(false);
+    }
+  }, [NGROK_URL, isVerified, emailFromParam, userIdFromParam]);
 
   useEffect(() => {
     // Initialize Self app
-    if (userId) {
+    if (userId && (isVerified || emailVerificationStatus === 'success')) {
       const initSelfApp = async () => {
         try {
           // Dynamically import SelfAppBuilder
@@ -75,7 +98,71 @@ export default function Home() {
       
       initSelfApp();
     }
-  }, [userId, NGROK_URL]);
+  }, [userId, emailVerificationStatus, isVerified, NGROK_URL]);
+
+  // Handle email form submission
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email) {
+      setEmailMessage('Please enter your email address');
+      return;
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailMessage('Please enter a valid email address');
+      return;
+    }
+    
+    setEmailVerificationStatus('pending');
+    setEmailMessage('Sending verification email...');
+    
+    try {
+      // First test the email configuration
+      const configTest = await fetch('/api/test-email-config');
+      const configResult = await configTest.json();
+      
+      if (!configResult.success) {
+        setEmailVerificationStatus('error');
+        setEmailMessage(`Email configuration error: ${configResult.message}`);
+        console.error('Email configuration error:', configResult);
+        return;
+      }
+      
+      // Send the verification email
+      const response = await fetch('/api/send-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setEmailVerificationStatus('success');
+        setEmailMessage('Verification email sent. Please check your inbox and follow the link to verify.');
+      } else {
+        setEmailVerificationStatus('error');
+        setEmailMessage(data.message || 'Failed to send verification email. Please try again.');
+        
+        // If Gmail login is the issue, show help instructions
+        if (data.message && (
+            data.message.includes('authentication failed') || 
+            data.message.includes('Username and Password not accepted')
+          )) {
+          setEmailMessage(`${data.message} Please check the README for setup instructions.`);
+        }
+      }
+    } catch (error) {
+      console.error('Error sending verification email:', error);
+      setEmailVerificationStatus('error');
+      setEmailMessage('An error occurred. Please try again.');
+    }
+  };
 
   // Fixing the type by matching the pattern from the example
   // The onSuccess handler should be called with no parameters
@@ -188,6 +275,12 @@ export default function Home() {
     // Update QR value
     const fallbackValue = `${NGROK_URL}/api/verify?id=${newUserId}`;
     setQrValue(fallbackValue);
+    
+    // Reset email verification if needed
+    if (!isVerified) {
+      setEmailVerificationStatus('idle');
+      setEmail('');
+    }
   };
 
   const renderStatus = () => {
@@ -211,77 +304,170 @@ export default function Home() {
     }
   };
 
+  const renderQrCodeSection = () => {
+    // Only show QR code section if user has verified their email through the link
+    // This checks if they've been redirected back from the verification page
+    if (!isVerified) return null;
+    
+    return (
+      <div className="w-full">
+        <h2 className="text-2xl font-semibold mb-4">Verify Your Identity</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-300">
+          {verificationStatus === 'success' 
+            ? 'Your identity has been successfully verified!'
+            : 'Scan the QR code below with the Self app to verify your identity.'}
+        </p>
+        
+        <div className="flex justify-center mb-6">
+          {isLoading ? (
+            <div className="animate-pulse bg-gray-200 w-[250px] h-[250px] flex items-center justify-center">
+              <p>Loading QR code...</p>
+            </div>
+          ) : verificationStatus === 'success' ? (
+            <div className="bg-green-100 w-[250px] h-[250px] flex items-center justify-center rounded-lg">
+              <div className="text-center p-6">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <p className="mt-4 font-medium text-green-700">Verification Successful</p>
+              </div>
+            </div>
+          ) : selfApp ? (
+            <SelfQRcodeWrapper
+              selfApp={selfApp}
+              type="websocket"
+              onSuccess={handleSelfVerification}
+              size={250}
+            />
+          ) : (
+            <div className="animate-pulse bg-gray-200 w-[250px] h-[250px] flex items-center justify-center">
+              <p>Initializing Self app...</p>
+            </div>
+          )}
+        </div>
+        
+        {renderStatus()}
+        
+        {debugInfo && verificationStatus !== 'pending' && (
+          <div className={`mt-4 p-4 rounded-md ${
+            verificationStatus === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+          }`}>
+            <p className="text-sm">{debugInfo}</p>
+          </div>
+        )}
+        
+        {verificationStatus !== 'idle' && verificationStatus !== 'pending' && (
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={resetVerification}
+              className="px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700"
+            >
+              Start New Verification
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm flex flex-col">
         <h1 className="text-4xl font-bold mb-8">Identity Verification</h1>
         
         <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
-          <h2 className="text-2xl font-semibold mb-4">Verify Your Identity</h2>
-          <p className="mb-6 text-gray-600 dark:text-gray-300">
-            {verificationStatus === 'success' 
-              ? 'Your identity has been successfully verified!'
-              : 'Scan the QR code below with the Self app to verify your identity.'}
-          </p>
+          {/* If user is verified through email link, show verified banner */}
+          {isVerified && (
+            <div className="mb-6 bg-green-100 p-4 rounded-md">
+              <p className="text-green-800">
+                <span className="font-semibold">Email verified:</span> {email}
+              </p>
+            </div>
+          )}
           
-          <div className="flex justify-center mb-6">
-            {isLoading ? (
-              <div className="animate-pulse bg-gray-200 w-[250px] h-[250px] flex items-center justify-center">
-                <p>Loading QR code...</p>
-              </div>
-            ) : verificationStatus === 'success' ? (
-              <div className="bg-green-100 w-[250px] h-[250px] flex items-center justify-center rounded-lg">
-                <div className="text-center p-6">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <p className="mt-4 font-medium text-green-700">Verification Successful</p>
+          {/* If user is not verified via email yet */}
+          {!isVerified && (
+            <>
+              {/* Email success state - Show after sending email */}
+              {emailVerificationStatus === 'success' ? (
+                <div className="mb-8 w-full">
+                  <div className="bg-blue-100 p-6 rounded-lg text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-blue-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
+                    </svg>
+                    <h2 className="text-2xl font-semibold mb-2">Check Your Email</h2>
+                    <p className="mb-4 text-gray-700">
+                      We've sent a verification link to: <strong>{email}</strong>
+                    </p>
+                    <p className="mb-6 text-gray-600">
+                      Please check your inbox and click the verification link to continue with identity verification.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setEmailVerificationStatus('idle');
+                        setEmailMessage('');
+                      }}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    >
+                      Use a different email
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ) : selfApp ? (
-              <SelfQRcodeWrapper
-                selfApp={selfApp}
-                type="websocket"
-                onSuccess={handleSelfVerification}
-                size={250}
-              />
-            ) : (
-              <div className="animate-pulse bg-gray-200 w-[250px] h-[250px] flex items-center justify-center">
-                <p>Initializing Self app...</p>
-              </div>
-            )}
-          </div>
-          
-          {renderStatus()}
-          
-          {(verificationStatus === 'success' || verificationStatus === 'error') && (
-            <div className="mt-4 text-center">
-              <button
-                onClick={resetVerification}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-              >
-                {verificationStatus === 'success' ? 'Verify Another Identity' : 'Try Again'}
-              </button>
-            </div>
+              ) : (
+                <div className="mb-8 w-full">
+                  <h2 className="text-2xl font-semibold mb-4">Enter Your Email</h2>
+                  <p className="mb-4 text-gray-600 dark:text-gray-300">
+                    Please enter your email address to receive a verification link.
+                  </p>
+                  
+                  <form onSubmit={handleEmailSubmit} className="w-full">
+                    <div className="mb-4">
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="your@email.com"
+                        required
+                      />
+                    </div>
+                    
+                    {emailMessage && (
+                      <p className={`text-sm mb-4 ${
+                        emailVerificationStatus === 'error' ? 'text-red-500' : 
+                        'text-gray-500'
+                      }`}>
+                        {emailMessage}
+                      </p>
+                    )}
+                    
+                    <button
+                      type="submit"
+                      disabled={emailVerificationStatus === 'pending'}
+                      className={`w-full px-4 py-2 text-white font-medium rounded-md 
+                        ${emailVerificationStatus === 'pending' 
+                          ? 'bg-gray-400 cursor-not-allowed' 
+                          : 'bg-blue-600 hover:bg-blue-700'}`}
+                    >
+                      {emailVerificationStatus === 'pending' ? (
+                        <span className="flex items-center justify-center">
+                          <span className="animate-spin h-4 w-4 border-t-2 border-b-2 border-white rounded-full mr-2"></span>
+                          Sending...
+                        </span>
+                      ) : 'Send Verification Email'}
+                    </button>
+                  </form>
+                </div>
+              )}
+            </>
           )}
           
-          {debugInfo && (
-            <div className="mt-4 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs">
-              <p className="font-semibold">Debug Info:</p>
-              <p>{debugInfo}</p>
-            </div>
-          )}
-          
-          {userId && (
-            <p className="mt-4 text-sm text-gray-500">
-              User ID: {userId.substring(0, 8)}...
-            </p>
-          )}
-          
-          <div className="mt-6 text-sm text-gray-500 dark:text-gray-400">
-            <p>Privacy-first identity verification powered by Self Protocol.</p>
-            <p className="mt-1 text-xs">Using ngrok URL: {NGROK_URL}</p>
-          </div>
+          {/* Only show QR code section if user has verified their email */}
+          {isVerified && renderQrCodeSection()}
         </div>
       </div>
     </main>
