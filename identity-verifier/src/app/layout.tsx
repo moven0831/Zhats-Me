@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Zhat's Me",
-  description: "Identity verification with Self Protocol",
+  description: "Secure and private identity verification powered by Self Protocol - verify without sharing your personal data",
 };
 
 export default function RootLayout({
@@ -43,7 +43,7 @@ export default function RootLayout({
           {children}
         </div>
         <footer className="w-full border-t p-4 text-center text-sm text-gray-500">
-          <p>Powered by Self Protocol • Secure Identity Verification</p>
+          <p>Powered by Self Protocol • Privacy-Preserving Identity Verification • Your credentials, your control</p>
         </footer>
       </body>
     </html>

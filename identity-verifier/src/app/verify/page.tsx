@@ -64,7 +64,7 @@ export default function VerifyPage() {
         <h1 className="page-title">ID verification with Self Protocol</h1>
         
         <div className="card w-full max-w-md p-8 animate-fade-in">
-          <h2 className="text-2xl font-semibold mb-4">Email Verification</h2>
+          <h2 className="text-2xl font-semibold mb-4">Email Authentication</h2>
           
           {verificationStatus === 'loading' && (
             <div className="flex flex-col items-center justify-center p-6">
@@ -81,11 +81,14 @@ export default function VerifyPage() {
                 </svg>
               </div>
               <p className="text-center mb-6">{message}</p>
+              <p className="text-center text-gray-600 text-sm mb-6">
+                You're one step closer to secure verification. In the next step, you'll use the Self app to verify your identity while keeping your credentials private.
+              </p>
               <button
                 onClick={handleContinue}
                 className="btn-primary"
               >
-                Continue to Verification
+                Continue to Identity Verification
               </button>
             </div>
           )}
@@ -98,11 +101,14 @@ export default function VerifyPage() {
                 </svg>
               </div>
               <p className="text-center mb-6">{message}</p>
+              <p className="text-center text-gray-600 text-sm mb-6">
+                The verification link may have expired or is invalid. Please request a new verification email to continue.
+              </p>
               <button
                 onClick={() => router.push('/')}
                 className="btn-primary"
               >
-                Back to Home
+                Return to Homepage
               </button>
             </div>
           )}

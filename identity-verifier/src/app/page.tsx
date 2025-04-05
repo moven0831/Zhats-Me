@@ -293,15 +293,15 @@ export default function Home() {
           <div className="mt-4 flex flex-col items-center justify-center">
             <div className="flex items-center mb-2">
               <div className="spin h-5 w-5 border-t-2 border-b-2 border-yellow-500 mr-2 rounded-full"></div>
-              <p className="text-yellow-500">Verifying your identity...</p>
+              <p className="text-yellow-500">Securely verifying your credentials...</p>
             </div>
             <p className="text-xs text-gray-500">Time elapsed: {timer}s</p>
           </div>
         );
       case 'success':
-        return <p className="mt-4 text-green-500 font-medium text-center">Identity verified successfully!</p>;
+        return <p className="mt-4 text-green-500 font-medium text-center">Identity verified successfully! Your credentials have been securely validated.</p>;
       case 'error':
-        return <p className="mt-4 text-red-500 font-medium text-center">Error verifying identity. Please try again.</p>;
+        return <p className="mt-4 text-red-500 font-medium text-center">Verification could not be completed. Please ensure you have the required credentials in your Self app and try again.</p>;
       default:
         return null;
     }
@@ -314,11 +314,11 @@ export default function Home() {
     
     return (
       <div className="w-full animate-fade-in">
-        <h2 className="text-2xl font-semibold mb-4">Verify Your Identity</h2>
+        <h2 className="text-2xl font-semibold mb-4">Secure Identity Verification</h2>
         <p className="mb-6 text-light-text">
           {verificationStatus === 'success' 
-            ? 'Your identity has been successfully verified!'
-            : 'Scan the QR code below with the Self app to verify your identity.'}
+            ? 'Congratulations! Your identity has been securely verified through Self Protocol.'
+            : 'Complete your verification by scanning the QR code below with your Self app. This ensures your credentials remain private and secure.'}
         </p>
         
         <div className="flex justify-center mb-6">
@@ -340,19 +340,20 @@ export default function Home() {
             </div>
           ) : selfApp ? (
             <div className="rounded-xl shadow-md overflow-hidden border border-gray-200 p-6 bg-white flex flex-col items-center">
-              <p className="mb-4 text-sm text-gray-600">Scan with your Self app</p>
+              <p className="mb-4 text-sm text-gray-600">Open your Self app and scan this QR code</p>
               <SelfQRcodeWrapper
                 selfApp={selfApp}
                 type="websocket"
                 onSuccess={handleSelfVerification}
                 size={250}
               />
+              <p className="mt-4 text-xs text-gray-500">Your data remains private and controlled by you</p>
             </div>
           ) : (
             <div className="animate-pulse bg-gray-200 w-[300px] h-[300px] flex items-center justify-center rounded-xl">
               <div className="text-center p-4">
                 <div className="spin h-8 w-8 border-t-2 border-b-2 border-gray-500 mx-auto mb-3 rounded-full"></div>
-                <p>Initializing Self app...</p>
+                <p>Initializing secure connection...</p>
               </div>
             </div>
           )}
@@ -374,7 +375,7 @@ export default function Home() {
               onClick={resetVerification}
               className="btn-primary"
             >
-              Start New Verification
+              Begin New Verification
             </button>
           </div>
         )}
@@ -415,7 +416,7 @@ export default function Home() {
                       We've sent a verification link to: <strong>{email}</strong>
                     </p>
                     <p className="mb-6 text-gray-600">
-                      Please check your inbox and click the verification link to continue with identity verification.
+                      Please check your inbox and click the verification link to continue with your secure identity verification process. If you don't see the email, please check your spam folder.
                     </p>
                     <button
                       onClick={() => {
@@ -430,9 +431,9 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="mb-8 w-full animate-fade-in">
-                  <h2 className="text-2xl font-semibold mb-4">Enter Your Email</h2>
+                  <h2 className="text-2xl font-semibold mb-4">Begin Your Verification</h2>
                   <p className="mb-4 text-light-text">
-                    Please enter your email address to receive a verification link.
+                    Secure your identity with Self Protocol. Please enter your email address below to start the verification process.
                   </p>
                   
                   <form onSubmit={handleEmailSubmit} className="w-full">
@@ -470,7 +471,7 @@ export default function Home() {
                           <span className="spin h-4 w-4 border-t-2 border-b-2 border-white rounded-full mr-2"></span>
                           Sending...
                         </span>
-                      ) : 'Send Verification Email'}
+                      ) : 'Start Verification Process'}
                     </button>
                   </form>
                 </div>
