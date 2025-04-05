@@ -194,6 +194,34 @@ export default function ZkEmailVerifier({
           Upload your {eventName} ticket email file (.eml format) to verify your participation eligibility.
         </p>
         
+        <div className="bg-teal-50/10 dark:bg-teal-950/10 p-3 rounded-md border border-teal-200/20 dark:border-teal-800/20 mb-4 backdrop-blur-md">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div>
+              <h3 className="font-medium text-teal-800 dark:text-teal-300 mb-1 flex items-center text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-1 text-teal-500">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+                Demo Option
+              </h3>
+              <p className="text-teal-700 dark:text-teal-400 text-xs">
+                Download a sample ticket file to test the verification process
+              </p>
+            </div>
+            <div>
+              <a 
+                href="/sample-ethglobal-ticket.eml" 
+                download
+                className="flex items-center space-x-2 bg-white/30 dark:bg-slate-800/30 hover:bg-white/50 dark:hover:bg-slate-800/50 border border-teal-200/30 dark:border-teal-800/30 text-teal-700 dark:text-teal-300 font-medium py-1.5 px-3 rounded-md cursor-pointer text-sm transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+                <span>Download Sample File</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        
         <div className="bg-blue-50/10 dark:bg-blue-950/10 p-3 rounded-md border border-blue-200/20 dark:border-blue-800/20 mb-4 backdrop-blur-md">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div>
