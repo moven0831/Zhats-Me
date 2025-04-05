@@ -272,7 +272,7 @@ function Home() {
               date_of_birth: true
             },
             scope: appScope,
-            endpoint: "https://api.joinself.com",
+            endpoint: process.env.NEXT_PUBLIC_APP_URL,
             devMode: true,
           }).build();
 
