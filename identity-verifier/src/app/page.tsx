@@ -21,6 +21,22 @@ const SelfQRcodeWrapper = dynamic(
   }
 );
 
+// Dynamically import the ZkEmail component
+const ZkEmailVerifier = dynamic(
+  () => import('../components/ZkEmailVerifier'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="animate-pulse bg-gray-200 w-full p-6 flex items-center justify-center rounded-xl">
+        <div className="text-center p-4">
+          <div className="spin h-8 w-8 border-t-2 border-b-2 border-gray-500 mx-auto mb-3 rounded-full"></div>
+          <p>Loading ZK Email verifier...</p>
+        </div>
+      </div>
+    )
+  }
+);
+
 export default function Home() {
   const searchParams = useSearchParams();
   const isVerified = searchParams.get('verified') === 'true';
@@ -383,6 +399,17 @@ export default function Home() {
             >
               Begin New Verification
             </button>
+          </div>
+        )}
+        
+        {/* Show ZkEmail verification section after successful Self verification */}
+        {verificationStatus === 'success' && (
+          <div className="mt-10 border-t pt-8">
+            <h2 className="text-xl font-semibold mb-2">Step 2: Verify Your ETHGlobal Taipei Ticket</h2>
+            <p className="mb-6 text-light-text">
+              Now that your identity has been verified, please upload your ETHGlobal Taipei ticket email to complete the verification process.
+            </p>
+            <ZkEmailVerifier />
           </div>
         )}
       </div>
