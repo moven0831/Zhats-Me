@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyProof } from '@/lib/verification';
+import { verifyProof, getUserIdentifier } from '@/lib/verification';
+import { storeVerificationResult } from './status/route';
 
 // Helper function to set CORS headers
 function setCorsHeaders(response: NextResponse) {
@@ -26,11 +27,34 @@ export async function POST(req: NextRequest) {
     // Log the received data for debugging
     console.log('Received verification data:', JSON.stringify(data, null, 2));
     
+    // Extract user ID directly from the proof data if available
+    let userId = data.userId;
+    
     // Use our verification utility to verify the proof
     const verificationResult = await verifyProof(data);
     console.log('Verification result:', JSON.stringify(verificationResult, null, 2));
     
-    const response = NextResponse.json(verificationResult);
+    // If userId wasn't provided in the request, try to extract it from the proof
+    if (!userId && data.publicSignals) {
+      try {
+        userId = await getUserIdentifier(data.publicSignals);
+        console.log('Extracted userId from verification data:', userId);
+      } catch (err) {
+        console.error('Failed to extract userId from publicSignals:', err);
+      }
+    }
+    
+    // Fallback to 'unknown' if we still don't have a userId
+    userId = userId || 'unknown';
+    
+    // Store the result for later retrieval by the status endpoint
+    await storeVerificationResult(userId, verificationResult);
+    console.log(`Stored verification result for user ${userId}`);
+    
+    const response = NextResponse.json({
+      ...verificationResult,
+      userId // Include the userId in the response for client reference
+    });
     return setCorsHeaders(response);
   } catch (error) {
     console.error('Verification error:', error);
@@ -64,6 +88,9 @@ export async function GET(req: NextRequest) {
     // Use our verification utility for the fallback flow
     const verificationResult = await verifyProof({ id });
     console.log('Verification result:', JSON.stringify(verificationResult, null, 2));
+    
+    // Store the result for later retrieval
+    await storeVerificationResult(id, verificationResult);
     
     const response = NextResponse.json(verificationResult);
     return setCorsHeaders(response);
