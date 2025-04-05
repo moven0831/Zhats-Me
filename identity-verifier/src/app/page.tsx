@@ -36,7 +36,6 @@ export default function Home() {
   const [email, setEmail] = useState<string>('');
   const [emailVerificationStatus, setEmailVerificationStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
   const [emailMessage, setEmailMessage] = useState<string>('');
-  const [showVerificationForm, setShowVerificationForm] = useState<boolean>(true);
 
   // URL for the ngrok tunnel - ensure no trailing slash
   const NGROK_URL = "https://7694-111-235-226-130.ngrok-free.app";
@@ -46,8 +45,6 @@ export default function Home() {
     if (isVerified && emailFromParam && userIdFromParam) {
       setEmail(emailFromParam);
       setUserId(userIdFromParam);
-      setEmailVerificationStatus('success');
-      setShowVerificationForm(false);
       
       // For the QR code, generate a verification URL
       const fallbackValue = `${NGROK_URL}/api/verify?id=${userIdFromParam}`;
@@ -69,7 +66,7 @@ export default function Home() {
 
   useEffect(() => {
     // Initialize Self app
-    if (userId && emailVerificationStatus === 'success') {
+    if (userId && (isVerified || emailVerificationStatus === 'success')) {
       const initSelfApp = async () => {
         try {
           // Dynamically import SelfAppBuilder
@@ -101,7 +98,7 @@ export default function Home() {
       
       initSelfApp();
     }
-  }, [userId, emailVerificationStatus, NGROK_URL]);
+  }, [userId, emailVerificationStatus, isVerified, NGROK_URL]);
 
   // Handle email form submission
   const handleEmailSubmit = async (e: React.FormEvent) => {
@@ -283,7 +280,6 @@ export default function Home() {
     if (!isVerified) {
       setEmailVerificationStatus('idle');
       setEmail('');
-      setShowVerificationForm(true);
     }
   };
 
@@ -308,64 +304,10 @@ export default function Home() {
     }
   };
 
-  const renderEmailForm = () => {
-    if (!showVerificationForm) return null;
-    
-    return (
-      <div className="mb-8 w-full">
-        <h2 className="text-2xl font-semibold mb-4">Enter Your Email</h2>
-        <p className="mb-4 text-gray-600 dark:text-gray-300">
-          Please enter your email address to receive a verification link.
-        </p>
-        
-        <form onSubmit={handleEmailSubmit} className="w-full">
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Email Address
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="your@email.com"
-              required
-            />
-          </div>
-          
-          {emailMessage && (
-            <p className={`text-sm mb-4 ${
-              emailVerificationStatus === 'error' ? 'text-red-500' : 
-              emailVerificationStatus === 'success' ? 'text-green-500' : 
-              'text-gray-500'
-            }`}>
-              {emailMessage}
-            </p>
-          )}
-          
-          <button
-            type="submit"
-            disabled={emailVerificationStatus === 'pending'}
-            className={`w-full px-4 py-2 text-white font-medium rounded-md 
-              ${emailVerificationStatus === 'pending' 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-blue-600 hover:bg-blue-700'}`}
-          >
-            {emailVerificationStatus === 'pending' ? (
-              <span className="flex items-center justify-center">
-                <span className="animate-spin h-4 w-4 border-t-2 border-b-2 border-white rounded-full mr-2"></span>
-                Sending...
-              </span>
-            ) : 'Send Verification Email'}
-          </button>
-        </form>
-      </div>
-    );
-  };
-
   const renderQrCodeSection = () => {
-    if (showVerificationForm && emailVerificationStatus !== 'success') return null;
+    // Only show QR code section if user has verified their email through the link
+    // This checks if they've been redirected back from the verification page
+    if (!isVerified) return null;
     
     return (
       <div className="w-full">
@@ -434,7 +376,8 @@ export default function Home() {
         <h1 className="text-4xl font-bold mb-8">Identity Verification</h1>
         
         <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
-          {emailVerificationStatus === 'success' && (
+          {/* If user is verified through email link, show verified banner */}
+          {isVerified && (
             <div className="mb-6 bg-green-100 p-4 rounded-md">
               <p className="text-green-800">
                 <span className="font-semibold">Email verified:</span> {email}
@@ -442,8 +385,89 @@ export default function Home() {
             </div>
           )}
           
-          {renderEmailForm()}
-          {renderQrCodeSection()}
+          {/* If user is not verified via email yet */}
+          {!isVerified && (
+            <>
+              {/* Email success state - Show after sending email */}
+              {emailVerificationStatus === 'success' ? (
+                <div className="mb-8 w-full">
+                  <div className="bg-blue-100 p-6 rounded-lg text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-blue-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
+                    </svg>
+                    <h2 className="text-2xl font-semibold mb-2">Check Your Email</h2>
+                    <p className="mb-4 text-gray-700">
+                      We've sent a verification link to: <strong>{email}</strong>
+                    </p>
+                    <p className="mb-6 text-gray-600">
+                      Please check your inbox and click the verification link to continue with identity verification.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setEmailVerificationStatus('idle');
+                        setEmailMessage('');
+                      }}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    >
+                      Use a different email
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-8 w-full">
+                  <h2 className="text-2xl font-semibold mb-4">Enter Your Email</h2>
+                  <p className="mb-4 text-gray-600 dark:text-gray-300">
+                    Please enter your email address to receive a verification link.
+                  </p>
+                  
+                  <form onSubmit={handleEmailSubmit} className="w-full">
+                    <div className="mb-4">
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="your@email.com"
+                        required
+                      />
+                    </div>
+                    
+                    {emailMessage && (
+                      <p className={`text-sm mb-4 ${
+                        emailVerificationStatus === 'error' ? 'text-red-500' : 
+                        'text-gray-500'
+                      }`}>
+                        {emailMessage}
+                      </p>
+                    )}
+                    
+                    <button
+                      type="submit"
+                      disabled={emailVerificationStatus === 'pending'}
+                      className={`w-full px-4 py-2 text-white font-medium rounded-md 
+                        ${emailVerificationStatus === 'pending' 
+                          ? 'bg-gray-400 cursor-not-allowed' 
+                          : 'bg-blue-600 hover:bg-blue-700'}`}
+                    >
+                      {emailVerificationStatus === 'pending' ? (
+                        <span className="flex items-center justify-center">
+                          <span className="animate-spin h-4 w-4 border-t-2 border-b-2 border-white rounded-full mr-2"></span>
+                          Sending...
+                        </span>
+                      ) : 'Send Verification Email'}
+                    </button>
+                  </form>
+                </div>
+              )}
+            </>
+          )}
+          
+          {/* Only show QR code section if user has verified their email */}
+          {isVerified && renderQrCodeSection()}
         </div>
       </div>
     </main>
