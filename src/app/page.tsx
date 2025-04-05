@@ -642,8 +642,8 @@ export default function Home() {
             </>
           )}
           
-          {/* Only show QR code section if user has verified their email */}
-          {isVerified && renderQrCodeSection()}
+          {/* Only show QR code section if user has verified their email and not both verifications are complete */}
+          {isVerified && !(selfVerified && zkEmailVerified) && renderQrCodeSection()}
         </div>
         
         {/* Show ZkEmail verification section after successful Self verification */}
