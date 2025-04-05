@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "regions": ["all"],
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  }
+} 
