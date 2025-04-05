@@ -24,6 +24,7 @@ export default function Home() {
   const [userId, setUserId] = useState<string | null>(null);
   const [debugInfo, setDebugInfo] = useState<string>('');
   const [selfApp, setSelfApp] = useState<any>(null);
+  const [timer, setTimer] = useState<number>(0);
 
   // URL for the ngrok tunnel - ensure no trailing slash
   const NGROK_URL = "https://7694-111-235-226-130.ngrok-free.app";
@@ -80,6 +81,12 @@ export default function Home() {
   // The onSuccess handler should be called with no parameters
   const handleSelfVerification = async () => {
     setVerificationStatus('pending');
+    setTimer(0);
+    
+    // Start timer
+    const timerInterval = setInterval(() => {
+      setTimer(prev => prev + 1);
+    }, 1000);
     
     try {
       console.log('Verification initiated');
@@ -94,6 +101,7 @@ export default function Home() {
             console.log(`Verification status attempt ${i+1}:`, result);
             
             if (result && result.success) {
+              clearInterval(timerInterval); // Stop the timer
               setVerificationStatus('success');
               
               if (result.credentialSubject) {
@@ -107,6 +115,7 @@ export default function Home() {
               return true;
             } else if (i === retries - 1) {
               // Only set error on last retry
+              clearInterval(timerInterval); // Stop the timer
               setVerificationStatus('error');
               let errorMessage = result?.message || 'Unknown verification error';
               
@@ -120,6 +129,7 @@ export default function Home() {
           } catch (error) {
             console.error(`Error checking verification status (attempt ${i+1}):`, error);
             if (i === retries - 1) {
+              clearInterval(timerInterval); // Stop the timer
               setVerificationStatus('error');
               setDebugInfo(error instanceof Error ? error.message : 'Unknown error');
             }
@@ -137,6 +147,7 @@ export default function Home() {
       checkStatus();
       
     } catch (error) {
+      clearInterval(timerInterval); // Stop the timer
       console.error('Error handling verification:', error);
       setVerificationStatus('error');
       setDebugInfo(error instanceof Error ? error.message : 'Unknown error');
@@ -164,10 +175,33 @@ export default function Home() {
     setDebugInfo(errorMessage);
   };
 
+  // Add resetVerification function
+  const resetVerification = () => {
+    // Generate new userId
+    const newUserId = `0x${uuidv4().replace(/-/g, '')}`;
+    setUserId(newUserId);
+    
+    // Reset verification status and debug info
+    setVerificationStatus('idle');
+    setDebugInfo('');
+    
+    // Update QR value
+    const fallbackValue = `${NGROK_URL}/api/verify?id=${newUserId}`;
+    setQrValue(fallbackValue);
+  };
+
   const renderStatus = () => {
     switch (verificationStatus) {
       case 'pending':
-        return <p className="mt-4 text-yellow-500">Verifying your identity...</p>;
+        return (
+          <div className="mt-4 flex flex-col items-center justify-center">
+            <div className="flex items-center mb-2">
+              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-yellow-500 mr-2"></div>
+              <p className="text-yellow-500">Verifying your identity...</p>
+            </div>
+            <p className="text-xs text-gray-500">Time elapsed: {timer}s</p>
+          </div>
+        );
       case 'success':
         return <p className="mt-4 text-green-500">Identity verified successfully!</p>;
       case 'error':
@@ -185,13 +219,24 @@ export default function Home() {
         <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
           <h2 className="text-2xl font-semibold mb-4">Verify Your Identity</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-300">
-            Scan the QR code below with the Self app to verify your identity.
+            {verificationStatus === 'success' 
+              ? 'Your identity has been successfully verified!'
+              : 'Scan the QR code below with the Self app to verify your identity.'}
           </p>
           
           <div className="flex justify-center mb-6">
             {isLoading ? (
               <div className="animate-pulse bg-gray-200 w-[250px] h-[250px] flex items-center justify-center">
                 <p>Loading QR code...</p>
+              </div>
+            ) : verificationStatus === 'success' ? (
+              <div className="bg-green-100 w-[250px] h-[250px] flex items-center justify-center rounded-lg">
+                <div className="text-center p-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <p className="mt-4 font-medium text-green-700">Verification Successful</p>
+                </div>
               </div>
             ) : selfApp ? (
               <SelfQRcodeWrapper
@@ -208,6 +253,17 @@ export default function Home() {
           </div>
           
           {renderStatus()}
+          
+          {(verificationStatus === 'success' || verificationStatus === 'error') && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={resetVerification}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              >
+                {verificationStatus === 'success' ? 'Verify Another Identity' : 'Try Again'}
+              </button>
+            </div>
+          )}
           
           {debugInfo && (
             <div className="mt-4 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs">
