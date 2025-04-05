@@ -3,7 +3,7 @@
   "buildCommand": "pnpm build",
   "installCommand": "pnpm install",
   "framework": "nextjs",
-  "regions": ["all"],
+  "regions": ["ap-east-1"],
   "git": {
     "deploymentEnabled": {
       "main": true
