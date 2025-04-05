@@ -200,6 +200,9 @@ function Home() {
   const isVerified = searchParams.get('verified') === 'true';
   const emailFromParam = searchParams.get('email');
   const userIdFromParam = searchParams.get('userId');
+  
+  // Define fallback QR code value for when the Self app isn't initialized yet
+  const fallbackValue = 'placeholder-qr-value';
 
   const [verificationStatus, setVerificationStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
   const [_isLoading, _setIsLoading] = useState(true);
@@ -245,6 +248,8 @@ function Home() {
       _setQrValue(fallbackValue);
       
       _setIsLoading(false)
+    }
+  }, [isVerified, emailFromParam, userIdFromParam, _setQrValue, _setIsLoading]);
 
   useEffect(() => {
     // Initialize Self app
@@ -259,7 +264,7 @@ function Home() {
           
           // Initialize Self protocol app with configuration for off-chain verification
           const app = new SelfAppBuilder({
-            appName: "Zhat's Me Verifier"
+            appName: "Zhat's Me Verifier",
             userId,
             userIdType: "hex",
             disclosures: { 
@@ -277,6 +282,8 @@ function Home() {
       };
       
       initSelfApp()
+    }
+  }, [userId, isVerified, emailVerificationStatus, setSelfApp]);
 
   // Handle email form submission
   const handleEmailSubmit = async (e: React.FormEvent) => {
@@ -358,7 +365,10 @@ function Home() {
       
       // More robust approach - poll the status endpoint a few times
       const checkStatus = async (retries = 5, delay = 1000) => {
-        for (let i = 0; i < retries; i++) 
+        for (let i = 0; i < retries; i++) {
+          try {
+            // Fetch verification status
+            const response = await fetch('/api/verify-status');
             const result = await response.json();
             
             console.log(`Verification status attempt ${i+1}:`, result);

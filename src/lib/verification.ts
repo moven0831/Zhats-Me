@@ -8,7 +8,7 @@ export { getSelfUserIdentifier as getUserIdentifier };
 // Configuration parameters
 const SCOPE = "self-verification-scope"; // must match the frontend
 const USER_ID_TYPE = "hex"; // must match the frontend
-const DEV_MODE = true; // for testing
+const DEV_MODE = "hex"; // changed from boolean to string type for UserIdType
 
 export interface VerificationRequest {
   proof?: Record<string, unknown>;
@@ -92,8 +92,7 @@ export async function verifyProof(data: VerificationRequest): Promise<Verificati
     
     const configuredVerifier = new SelfBackendVerifier(
       SCOPE,
-      USER_ID_TYPE,
-      DEV_MODE
+      USER_ID_TYPE
     );
     
     if (minimumAge !== undefined) {
